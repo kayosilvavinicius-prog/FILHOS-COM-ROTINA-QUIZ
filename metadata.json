@@ -1,0 +1,8 @@
+{
+  "name": "Filhos com Rotina - QUIZ",
+  "description": "Uma jornada imersiva em 3 missões para transformar a rotina com seus filhos, culminando em uma página de vendas estratégica.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
