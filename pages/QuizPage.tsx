@@ -35,6 +35,7 @@ const QuizPage: React.FC = () => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, any>>({});
   const [isExiting, setIsExiting] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const STEPS: QuizStep[] = [
@@ -128,7 +129,7 @@ const QuizPage: React.FC = () => {
       title: "Você acredita que, se seu filho entendesse melhor como o dia funciona, ele cooperaria mais?",
       type: 'single',
       trackStep: "ETAPA_11_CRENCIA",
-      options: ["Sim, faz sentido", "Talvez", "Nunca pensei nisso"]
+      options: ["Sim, faz sentido", "Talvez", "Nunca pessoal nisso"]
     },
     {
       id: 12,
@@ -153,6 +154,44 @@ const QuizPage: React.FC = () => {
       trackStep: "ETAPA_15_DIAGNOSTICO"
     }
   ];
+
+  // Cálculo de Diagnóstico Baseado em Respostas Reais
+  const getDiagnosticData = () => {
+    let score = 0;
+    const maxScore = 15;
+
+    // Analisar Etapa 2 (Rotina atual)
+    const q2 = answers[2];
+    if (q2 === "É organizada, mas com muitos conflitos no dia a dia") score += 3;
+    if (q2 === "Tem horários, mas vive dando conflito") score += 2;
+    if (q2 === "Não temos uma rotina definida") score += 1;
+    if (q2 === "Bastante bagunçada e cansativa") score += 0;
+
+    // Analisar Etapa 9 (Entendimento de transição)
+    const q9 = answers[9];
+    if (q9 === "Sim, na maior parte do tempo") score += 5;
+    if (q9 === "Em alguns momentos") score += 3;
+    if (q9 === "Raramente") score += 1;
+    
+    // Analisar Etapa 10 (Reação à mudança)
+    const q10 = answers[10];
+    if (q10 === "Ele coopera") score += 5;
+    if (q10 === "Reclama um pouco") score += 3;
+    if (q10 === "Sempre resiste") score += 1;
+
+    const percentage = Math.min(Math.max((score / maxScore) * 100, 15), 85); // Mantém o pino em área visível
+    
+    let text = "";
+    if (percentage < 35) {
+      text = "Hoje seu filho vive em um estado de alerta constante, pois a falta de previsibilidade torna cada mudança de atividade uma ameaça ao controle dele.";
+    } else if (percentage < 65) {
+      text = "Hoje seu filho entende a rotina apenas em alguns momentos, o que gera resistência e picos de estresse quando o dia muda inesperadamente.";
+    } else {
+      text = "Sua rotina já tem uma base, mas a falta de clareza visual faz com que a criança ainda dependa de você para 'lembrar' cada passo, gerando cansaço mental.";
+    }
+
+    return { percentage, text };
+  };
 
   useEffect(() => {
     if (STEPS[currentStepIndex].type === 'processing') {
@@ -192,8 +231,13 @@ const QuizPage: React.FC = () => {
     setAnswers(prev => ({ ...prev, [currentStepIndex]: updated }));
   };
 
+  const toggleAccordion = (index: number) => {
+    setOpenAccordion(openAccordion === index ? null : index);
+  };
+
   const progress = ((currentStepIndex + 1) / STEPS.length) * 100;
   const step = STEPS[currentStepIndex];
+  const diagnostic = step.type === 'result' ? getDiagnosticData() : { percentage: 40, text: "" };
 
   return (
     <div className="min-h-[100dvh] bg-[#FAF9F6] flex flex-col font-sans select-none overflow-x-hidden">
@@ -307,7 +351,7 @@ const QuizPage: React.FC = () => {
                 <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-red-50/50 relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-1.5 h-full bg-[#FE2C55]/10" />
                   <p className="text-[#0F172A] text-[17px] sm:text-[19px] font-bold leading-relaxed italic text-center px-2">
-                    "Hoje seu filho entende a rotina apenas em alguns momentos, o que gera resistência quando o dia muda."
+                    "{diagnostic.text}"
                   </p>
                 </div>
               </div>
@@ -320,7 +364,10 @@ const QuizPage: React.FC = () => {
                     <div className="w-1/3 h-full bg-[#FFD93D]" />
                     <div className="w-1/3 h-full bg-[#34C759]" />
                   </div>
-                  <div className="absolute top-[16px] left-[40%] -translate-x-1/2 flex flex-col items-center">
+                  <div 
+                    className="absolute top-[16px] flex flex-col items-center transition-all duration-1000 ease-out"
+                    style={{ left: `${diagnostic.percentage}%`, transform: 'translateX(-50%)' }}
+                  >
                     <div className="w-[36px] h-[36px] rounded-full border-[5px] border-white bg-[#FE2C55] shadow-[0_5px_20px_rgba(254,44,85,0.4)] flex items-center justify-center relative ring-4 ring-[#FE2C55]/10">
                       <div className="w-2.5 h-2.5 bg-white rounded-full" />
                     </div>
@@ -361,31 +408,60 @@ const QuizPage: React.FC = () => {
                 </div>
               </div>
 
+              {/* Accordion List */}
               <div className="space-y-4 px-2">
-                <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center justify-between group transition-all">
-                  <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-[#FE2C55]">
-                       <Tv size={28} />
+                <div 
+                  onClick={() => toggleAccordion(1)}
+                  className={`bg-white rounded-[2rem] shadow-sm border ${openAccordion === 1 ? 'border-red-100' : 'border-gray-100'} transition-all cursor-pointer overflow-hidden`}
+                >
+                  <div className="p-6 flex items-center justify-between group">
+                    <div className="flex items-center gap-5">
+                      <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-[#FE2C55]">
+                        <Tv size={28} />
+                      </div>
+                      <div className="flex flex-col">
+                        <h4 className="font-black text-[#0F172A] text-base leading-tight">Rotina visual clara</h4>
+                        <p className="text-[12px] text-gray-400 font-medium leading-tight mt-1">Seu filho coopera mais quando conse...</p>
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                      <h4 className="font-black text-[#0F172A] text-base leading-tight">Rotina visual clara</h4>
-                      <p className="text-[12px] text-gray-400 font-medium leading-tight mt-1">Seu filho coopera mais quando conse...</p>
+                    <ChevronDown size={22} className={`text-gray-300 transition-transform duration-300 ${openAccordion === 1 ? 'rotate-180' : ''}`} />
+                  </div>
+                  <div className={`transition-all duration-300 ease-in-out ${openAccordion === 1 ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+                    <div className="px-6 pb-8 pt-2">
+                      <p className="text-[#0F172A] text-[14px] font-medium leading-relaxed">
+                        Seu filho coopera mais quando consegue visualizar o que vem agora e o que vem depois, sem depender de ordens repetidas.
+                        <br /><br />
+                        Quando a rotina fica visível, a ansiedade diminui e a cooperação aumenta naturalmente.
+                      </p>
                     </div>
                   </div>
-                  <ChevronDown size={22} className="text-gray-300" />
                 </div>
 
-                <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center justify-between group transition-all">
-                  <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-[#FE2C55]">
-                       <LayoutGrid size={28} />
+                <div 
+                  onClick={() => toggleAccordion(2)}
+                  className={`bg-white rounded-[2rem] shadow-sm border ${openAccordion === 2 ? 'border-red-100' : 'border-gray-100'} transition-all cursor-pointer overflow-hidden`}
+                >
+                  <div className="p-6 flex items-center justify-between group">
+                    <div className="flex items-center gap-5">
+                      <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-[#FE2C55]">
+                        <LayoutGrid size={28} />
+                      </div>
+                      <div className="flex flex-col">
+                        <h4 className="font-black text-[#0F172A] text-base leading-tight">Transições bem definidas</h4>
+                        <p className="text-[12px] text-gray-400 font-medium leading-tight mt-1">Quando a criança entende o moment...</p>
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                      <h4 className="font-black text-[#0F172A] text-base leading-tight">Transições bem definidas</h4>
-                      <p className="text-[12px] text-gray-400 font-medium leading-tight mt-1">Quando a criança entende o moment...</p>
+                    <ChevronDown size={22} className={`text-gray-300 transition-transform duration-300 ${openAccordion === 2 ? 'rotate-180' : ''}`} />
+                  </div>
+                  <div className={`transition-all duration-300 ease-in-out ${openAccordion === 2 ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+                    <div className="px-6 pb-8 pt-2">
+                      <p className="text-[#0F172A] text-[14px] font-medium leading-relaxed">
+                        Quando a criança entende o momento certo de cada atividade, as transições deixam de ser surpresa.
+                        <br /><br />
+                        Isso reduz birras, negociações e conflitos, porque o cérebro infantil passa a antecipar o que vem a seguir.
+                      </p>
                     </div>
                   </div>
-                  <ChevronDown size={22} className="text-gray-300" />
                 </div>
               </div>
 
