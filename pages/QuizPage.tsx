@@ -5,8 +5,12 @@ import {
   Check, 
   ArrowRight, 
   Loader2, 
-  ShieldCheck, 
-  Heart
+  ChevronDown,
+  Quote,
+  Tv,
+  LayoutGrid,
+  MapPin,
+  Lock
 } from 'lucide-react';
 import { funnelTracker, FunnelStep } from '../services/funnelTracker';
 
@@ -123,7 +127,7 @@ const QuizPage: React.FC = () => {
       id: 11,
       title: "Você acredita que, se seu filho entendesse melhor como o dia funciona, ele cooperaria mais?",
       type: 'single',
-      trackStep: "ETAPA_12_APRENDIZADO",
+      trackStep: "ETAPA_11_CRENCIA",
       options: ["Sim, faz sentido", "Talvez", "Nunca pensei nisso"]
     },
     {
@@ -138,12 +142,13 @@ const QuizPage: React.FC = () => {
       title: "Processando seu diagnóstico...",
       subtitle: "Aguarde enquanto analisamos sua rotina.",
       type: 'processing',
+      image: "https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA/f3a64c152a91eb1ab2000ecf39405c8686bd54c9/Expert%20aline.png",
       trackStep: "ETAPA_14_PROCESSAMENTO",
     },
     {
       id: 15,
-      title: "Seu Guia está pronto!",
-      subtitle: "Baseado no perfil do seu filho, aqui estão as recomendações.",
+      title: "Seu Guia Personalizado de Rotina do Seu Filho está pronto",
+      subtitle: "Com base nas suas respostas, reunimos os ajustes certos para reduzir conflitos e trazer mais cooperação para o dia a dia da sua casa.",
       type: 'result',
       trackStep: "ETAPA_15_DIAGNOSTICO"
     }
@@ -188,7 +193,6 @@ const QuizPage: React.FC = () => {
   };
 
   const progress = ((currentStepIndex + 1) / STEPS.length) * 100;
-
   const step = STEPS[currentStepIndex];
 
   return (
@@ -198,17 +202,25 @@ const QuizPage: React.FC = () => {
           Filhos com <span className="text-[#FE2C55]">Rotina</span>
         </span>
       </header>
+
       <div className="px-6">
-        <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-          <div className="h-full bg-[#FE2C55] transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+        <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden shadow-sm">
+          <div 
+            className="h-full bg-[#FE2C55] transition-all duration-500 ease-out" 
+            style={{ width: `${progress}%` }} 
+          />
         </div>
       </div>
+
       <main ref={containerRef} className={`flex-1 flex flex-col px-6 py-10 transition-all duration-300 transform ${isExiting ? 'opacity-0 translate-x-[-20px]' : 'opacity-100 translate-x-0'}`}>
         <div className="max-w-[500px] mx-auto w-full flex flex-col h-full">
-          <div className="mb-10 text-center">
-            {step.title && <h1 className="text-2xl sm:text-3xl font-black leading-tight text-[#0F172A] mb-4 whitespace-pre-line">{step.title}</h1>}
-            {step.subtitle && <p className="text-gray-500 font-medium leading-relaxed">{step.subtitle}</p>}
-          </div>
+          
+          {step.type !== 'result' && (
+            <div className="mb-10 text-center">
+              {step.title && <h1 className="text-2xl sm:text-3xl font-black leading-tight text-[#0F172A] mb-4 tracking-tight">{step.title}</h1>}
+              {step.subtitle && <p className="text-gray-500 font-medium leading-relaxed">{step.subtitle}</p>}
+            </div>
+          )}
 
           {step.type === 'single' && step.options && (
             <div className="grid grid-cols-1 gap-4">
@@ -219,7 +231,7 @@ const QuizPage: React.FC = () => {
                   <button key={idx} onClick={() => handleNext(label)} className="w-full bg-white border border-gray-100 rounded-[2rem] p-6 text-left font-bold shadow-sm active:scale-[0.98] transition-all flex justify-between items-center group">
                     <div className="flex items-center gap-4">
                       {optImage && <img src={optImage} className="w-12 h-12 rounded-lg object-cover" alt={label} />}
-                      <span className="text-[17px] leading-tight">{label}</span>
+                      <span className="text-[17px] leading-tight text-[#0F172A]">{label}</span>
                     </div>
                     <ChevronRight size={20} className="text-gray-300 group-active:text-[#FE2C55]" />
                   </button>
@@ -239,7 +251,7 @@ const QuizPage: React.FC = () => {
                   </button>
                 );
               })}
-              <button onClick={() => handleNext()} className="w-full bg-[#FE2C55] text-white font-black py-6 rounded-[2rem] mt-6 shadow-lg">Continuar</button>
+              <button onClick={() => handleNext()} className="w-full bg-[#FE2C55] text-white font-black py-6 rounded-[2rem] mt-6 shadow-lg active:scale-95 transition-all">Continuar</button>
             </div>
           )}
 
@@ -263,18 +275,151 @@ const QuizPage: React.FC = () => {
           )}
 
           {step.type === 'processing' && (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 size={60} className="text-[#FE2C55] animate-spin mb-4" />
-              <p className="font-bold text-[#FE2C55] animate-pulse">Cruzando dados...</p>
+            <div className="flex flex-col flex-1 gap-8 items-center justify-center animate-fade-in">
+              {step.image && (
+                <div className="w-full aspect-square rounded-[3.5rem] overflow-hidden shadow-2xl border-[6px] border-white ring-8 ring-white/50">
+                  <img src={step.image} alt="Processando" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="flex flex-col items-center gap-4 py-8">
+                <Loader2 size={48} className="text-[#FE2C55] animate-spin" />
+                <p className="font-bold text-[#FE2C55] text-lg tracking-tight animate-pulse uppercase">Cruzando seus dados...</p>
+              </div>
             </div>
           )}
 
           {step.type === 'result' && (
-            <div className="text-center space-y-8 animate-fade-in">
-              <div className="bg-white p-8 rounded-[3rem] shadow-sm border border-red-50">
-                <p className="italic text-lg font-medium">"Sua rotina hoje gera ansiedade no seu filho porque ele não consegue prever o que acontecerá em seguida."</p>
+            <div className="flex flex-col gap-10 animate-fade-in pb-24">
+              <div className="text-center pt-2">
+                <h1 className="text-[28px] sm:text-[36px] font-black leading-[1.1] text-[#0F172A] mb-5 tracking-tight px-4">
+                  {step.title}
+                </h1>
+                <p className="text-gray-500 font-medium leading-relaxed px-6 text-sm sm:text-base">
+                  {step.subtitle}
+                </p>
               </div>
-              <button onClick={() => handleNext()} className="w-full bg-[#FE2C55] text-white font-black py-6 rounded-[2rem] shadow-xl animate-pulse">ACESSAR MEU GUIA PERSONALIZADO</button>
+
+              <div className="space-y-4 px-2">
+                <div className="flex items-center gap-2">
+                   <MapPin size={16} className="text-[#FE2C55]" />
+                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">SITUAÇÃO ATUAL DA SUA ROTINA</span>
+                </div>
+                <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-red-50/50 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1.5 h-full bg-[#FE2C55]/10" />
+                  <p className="text-[#0F172A] text-[17px] sm:text-[19px] font-bold leading-relaxed italic text-center px-2">
+                    "Hoje seu filho entende a rotina apenas em alguns momentos, o que gera resistência quando o dia muda."
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-8 px-2">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">MAPA DE PROGRESSO VISUAL</span>
+                <div className="relative pt-6 pb-12 px-2">
+                  <div className="h-[10px] w-full flex rounded-full overflow-hidden shadow-inner bg-gray-100">
+                    <div className="w-1/3 h-full bg-[#FF6B6B]" />
+                    <div className="w-1/3 h-full bg-[#FFD93D]" />
+                    <div className="w-1/3 h-full bg-[#34C759]" />
+                  </div>
+                  <div className="absolute top-[16px] left-[40%] -translate-x-1/2 flex flex-col items-center">
+                    <div className="w-[36px] h-[36px] rounded-full border-[5px] border-white bg-[#FE2C55] shadow-[0_5px_20px_rgba(254,44,85,0.4)] flex items-center justify-center relative ring-4 ring-[#FE2C55]/10">
+                      <div className="w-2.5 h-2.5 bg-white rounded-full" />
+                    </div>
+                    <div className="w-[2.5px] h-10 bg-gradient-to-b from-red-100/50 to-transparent" />
+                  </div>
+                  <div className="flex justify-between mt-10 text-[9px] font-black text-gray-500 uppercase tracking-tight">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B] border-2 border-white shadow-sm" />
+                      VOCÊ HOJE
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#FFD93D] border-2 border-white shadow-sm" />
+                      EM AJUSTE
+                    </div>
+                    <div className="flex flex-col items-center gap-2 text-[#34C759]">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#34C759] border-2 border-white shadow-sm" />
+                      ROTINA PREVISÍVEL (IDEAL)
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6 px-2 text-center">
+                <h3 className="font-black text-gray-400 uppercase tracking-widest text-[11px]">TRANSFORMAÇÃO ESPERADA</h3>
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="flex flex-col gap-4">
+                    <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border-2 border-white shadow-lg bg-gray-200">
+                      <img src="https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/45b6d41935979ee738350aed1a78aa0a3090aac4/ANTES.png" className="w-full h-full object-cover grayscale" alt="Antes" />
+                    </div>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight leading-tight px-2">VOCÊ HOJE (SEM ROTINA)</span>
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border-2 border-[#34C759]/30 shadow-2xl ring-4 ring-[#34C759]/10">
+                      <img src="https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/45b6d41935979ee738350aed1a78aa0a3090aac4/DEPOIS.png" className="w-full h-full object-cover" alt="Depois" />
+                    </div>
+                    <span className="text-[10px] font-black text-[#34C759] uppercase tracking-tight leading-tight px-2">VOCÊ COM ROTINA</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 px-2">
+                <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center justify-between group transition-all">
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-[#FE2C55]">
+                       <Tv size={28} />
+                    </div>
+                    <div className="flex flex-col">
+                      <h4 className="font-black text-[#0F172A] text-base leading-tight">Rotina visual clara</h4>
+                      <p className="text-[12px] text-gray-400 font-medium leading-tight mt-1">Seu filho coopera mais quando conse...</p>
+                    </div>
+                  </div>
+                  <ChevronDown size={22} className="text-gray-300" />
+                </div>
+
+                <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center justify-between group transition-all">
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-[#FE2C55]">
+                       <LayoutGrid size={28} />
+                    </div>
+                    <div className="flex flex-col">
+                      <h4 className="font-black text-[#0F172A] text-base leading-tight">Transições bem definidas</h4>
+                      <p className="text-[12px] text-gray-400 font-medium leading-tight mt-1">Quando a criança entende o moment...</p>
+                    </div>
+                  </div>
+                  <ChevronDown size={22} className="text-gray-300" />
+                </div>
+              </div>
+
+              <div className="pt-10 space-y-10 px-2">
+                <h3 className="text-center font-black text-gray-300 uppercase tracking-[0.2em] text-[11px]">RESULTADOS REAIS</h3>
+                <div className="space-y-8">
+                  <div className="bg-white p-10 rounded-[3rem] shadow-md border border-gray-50 relative">
+                    <div className="absolute top-6 left-6 text-[#FE2C55]/10"><Quote size={48} fill="currentColor" /></div>
+                    <p className="text-[#0F172A] text-[15px] font-bold leading-relaxed italic relative z-10 text-center">
+                      "Depois de 3 dias usando o guia, as manhãs pararam de ser um campo de batalha. Ver ele se arrumando sozinho me deu um alívio imenso."
+                    </p>
+                    <p className="mt-6 text-[11px] font-black text-center text-[#FE2C55] uppercase tracking-widest">— ANA, MÃE DO BENTO (4 ANOS)</p>
+                  </div>
+                  <div className="bg-white p-10 rounded-[3rem] shadow-md border border-gray-50 relative">
+                    <div className="absolute top-6 left-6 text-[#FE2C55]/10"><Quote size={48} fill="currentColor" /></div>
+                    <p className="text-[#0F172A] text-[15px] font-bold leading-relaxed italic relative z-10 text-center">
+                      "Eu achava que precisava de pulso firme, mas precisava de método. A rotina visual mudou o comportamento dele da água pro vinho."
+                    </p>
+                    <p className="mt-6 text-[11px] font-black text-center text-[#FE2C55] uppercase tracking-widest">— CARLA, MÃE DA SOFIA (7 ANOS)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-12 px-2 sticky bottom-6 z-[90]">
+                <button 
+                  onClick={() => handleNext()} 
+                  className="w-full bg-[#FE2C55] text-white font-black py-7 rounded-[2.5rem] shadow-[0_20px_60px_rgba(254,44,85,0.5)] transition-all active:scale-[0.98] text-[17px] sm:text-[19px] uppercase tracking-tight text-center leading-tight px-8 border-b-[6px] border-red-700 hover:brightness-110 flex items-center justify-center gap-3"
+                >
+                  Ver a maneira mais fácil de aplicar isso na prática <ArrowRight size={22} />
+                </button>
+                <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  <Lock size={12} /> Diagnóstico Seguro e Privado
+                </div>
+              </div>
             </div>
           )}
         </div>
