@@ -34,11 +34,21 @@ class FunnelTracker {
   constructor() {
     let id = localStorage.getItem('funnel_user_id');
     if (!id) {
-      // Gera um UUID simples baseado em timestamp e aleatoriedade
       id = 'usr_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
       localStorage.setItem('funnel_user_id', id);
     }
     this.userId = id;
+  }
+
+  private isDevelopment(): boolean {
+    const hostname = window.location.hostname;
+    return (
+      hostname === 'localhost' || 
+      hostname === '127.0.0.1' || 
+      hostname.includes('.preview.') || 
+      hostname.includes('stackblitz') ||
+      hostname.includes('webcontainer')
+    );
   }
 
   private getSource(): string {
@@ -46,7 +56,12 @@ class FunnelTracker {
     const utmSource = urlParams.get('utm_source')?.toLowerCase() || "";
     const mode = urlParams.get('mode')?.toLowerCase() || "";
 
-    if (mode === "test") return "Teste";
+    // LÓGICA DE BLOQUEIO INTELIGENTE
+    // 1. Se explicitamente 'test', é teste.
+    // 2. Se estiver em ambiente dev e NÃO explicitamente 'prod', é teste.
+    if (mode === "test" || (this.isDevelopment() && mode !== "prod")) {
+      return "Teste";
+    }
     
     if (utmSource.includes("facebook") || utmSource.includes("fb")) return "Facebook";
     if (utmSource.includes("instagram") || utmSource.includes("ig")) return "Instagram";
@@ -56,10 +71,17 @@ class FunnelTracker {
     return "Direto";
   }
 
-  // Fixing type error by ensuring FunnelStep union includes all used values
+  /**
+   * Registra a etapa. Se estiver em modo teste ou ambiente dev, não envia para o Sheets.
+   */
   async track(step: FunnelStep) {
     const source = this.getSource();
     
+    if (source === "Teste") {
+      console.info(`%c[FunnelTracker] AMBIENTE DE DEV DETECTADO: Registro de "${step}" apenas no console.`, "color: #FE2C55; font-weight: bold; background: #FFF0F0; padding: 2px 5px; border-radius: 4px;");
+      return;
+    }
+
     const payload = {
       userId: this.userId,
       step: step,
@@ -67,7 +89,6 @@ class FunnelTracker {
     };
 
     try {
-      // Envia via POST (no-cors é necessário para Google Apps Script)
       fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
