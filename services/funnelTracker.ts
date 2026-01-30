@@ -1,80 +1,81 @@
 /**
  * FUNNEL TRACKER SERVICE
- * Envia dados para o Google Apps Script para persistência em planilha.
+ * Envia dados para o Google Apps Script para persistência em planilha (One row per user).
  */
 
-// URL do Google Apps Script configurada
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhj9GqSsO1DWX9jRfckLTOfKG23knzzgI00ElHBp_tKR98XuucrTXBAyhwc4gkeJn6ew/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhbBm5xr_s8uEgcw-5HRljBXrwgSbLUiGEGcwrMmnyx3UKq3BiHSCmqJzq9vTv_YBe5w/exec";
 
 export type FunnelStep = 
-  | "ETAPA_0_ENTROU_FUNIL"
-  | "ETAPA_1_WHATSAPP"
-  | "ETAPA_2_LIGACAO"
-  | "ETAPA_3_VSL_INICIADA"
+  | "ETAPA_1_CARREGOU_PAGINA"
+  | "ETAPA_1_INICIOU_JORNADA"
+  | "ETAPA_2_IDADE"
+  | "ETAPA_3_ROTINA_ATUAL"
   | "ETAPA_3_VSL_CONCLUIDA"
-  | "ETAPA_4_PAGINA_VENDAS"
-  | "CTA_PAGINA_VENDAS"
-  | "MODAL_CAPTURA_PREENCHIDO"
+  | "ETAPA_4_CONFLITOS"
+  | "ETAPA_5_REACAO"
+  | "ETAPA_6_SENTIMENTO_MAE"
+  | "ETAPA_7_CLIMA_DA_CASA"
+  | "ETAPA_8_FUTURO"
+  | "ETAPA_9_PREVISIBILIDADE"
+  | "ETAPA_10_TRANSICOES"
+  | "ETAPA_11_CRENCIA"
+  | "ETAPA_12_APRENDIZADO"
+  | "ETAPA_13_SOLUCAO_VISUAL"
+  | "ETAPA_14_PROCESSAMENTO"
+  | "ETAPA_15_DIAGNOSTICO"
+  | "ETAPA_16_CTA_PAGINA_VENDAS"
+  | "ENTROU_PAGINA_VENDAS"
+  | "CTA_COMPRA_CLICADO"
   | "CHECKOUT_INICIADO";
 
 class FunnelTracker {
   private userId: string;
 
   constructor() {
-    // Recupera ou gera ID único persistente para o usuário
     let id = localStorage.getItem('funnel_user_id');
     if (!id) {
-      id = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+      // Gera um UUID simples baseado em timestamp e aleatoriedade
+      id = 'usr_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
       localStorage.setItem('funnel_user_id', id);
     }
     this.userId = id;
   }
 
-  /**
-   * Identifica se a sessão atual é de teste baseado na URL
-   */
-  private isTestMode(): boolean {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('s') === 'test' || params.get('mode') === 'test';
-  }
-
   private getSource(): string {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('utm_source') || urlParams.get('source') || "Direto";
+    const utmSource = urlParams.get('utm_source')?.toLowerCase() || "";
+    const mode = urlParams.get('mode')?.toLowerCase() || "";
+
+    if (mode === "test") return "Teste";
+    
+    if (utmSource.includes("facebook") || utmSource.includes("fb")) return "Facebook";
+    if (utmSource.includes("instagram") || utmSource.includes("ig")) return "Instagram";
+    
+    if (utmSource) return utmSource.charAt(0).toUpperCase() + utmSource.slice(1);
+    
+    return "Direto";
   }
 
-  /**
-   * Envia o passo do funil para o Google Sheets
-   */
+  // Fixing type error by ensuring FunnelStep union includes all used values
   async track(step: FunnelStep) {
-    const isTest = this.isTestMode();
-    console.log(`[FunnelTracker] ${isTest ? '🧪 TESTE' : '🚀 REAL'} - Tracking: ${step}`);
+    const source = this.getSource();
     
     const payload = {
       userId: this.userId,
       step: step,
-      source: this.getSource()
+      source: source
     };
 
-    // Anexa parâmetro de teste na URL para o Google Apps Script identificar via e.parameter
-    const urlWithParams = new URL(SCRIPT_URL);
-    if (isTest) {
-      urlWithParams.searchParams.append('s', 'test');
-    }
-
     try {
-      // Usando mode: 'no-cors' para evitar problemas de Cross-Origin com o endpoint do Google Apps Script
-      // No modo 'no-cors', o corpo é enviado mas não podemos ler a resposta.
-      fetch(urlWithParams.toString(), {
+      // Envia via POST (no-cors é necessário para Google Apps Script)
+      fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      }).catch(err => console.warn("[FunnelTracker] Silently failed fetch (expected in no-cors):", err));
+      });
     } catch (error) {
-      console.error("[FunnelTracker] Error initiating track request:", error);
+      console.warn("[FunnelTracker] Silent Error:", error);
     }
   }
 }
