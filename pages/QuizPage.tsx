@@ -17,7 +17,6 @@ import {
   Repeat,
   Quote
 } from 'lucide-react';
-import IOSStatusBar from '../components/iOSStatusBar';
 import { funnelTracker } from '../services/funnelTracker';
 
 type QuizStepOption = {
@@ -367,8 +366,12 @@ const QuizPage: React.FC = () => {
 
   return (
     <div className="min-h-[100dvh] bg-[#FAF9F6] flex flex-col font-sans select-none overflow-x-hidden">
-      <IOSStatusBar dark />
-      <div className="px-6 pt-2">
+      <header className="pt-10 pb-6 text-center">
+        <span className="text-[22px] font-black tracking-tighter text-[#0F172A] uppercase">
+          Filhos com <span className="text-[#FE2C55]">Rotina</span>
+        </span>
+      </header>
+      <div className="px-6">
         <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
           <div className="h-full bg-[#FE2C55] transition-all duration-500 ease-out shadow-[0_0_10px_rgba(254,44,85,0.4)]" style={{ width: `${progress}%` }} />
         </div>
