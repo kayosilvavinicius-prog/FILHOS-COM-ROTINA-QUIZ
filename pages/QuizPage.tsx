@@ -206,7 +206,7 @@ const QuizPage: React.FC = () => {
       <main ref={containerRef} className={`flex-1 flex flex-col px-6 py-10 transition-all duration-300 transform ${isExiting ? 'opacity-0 translate-x-[-20px]' : 'opacity-100 translate-x-0'}`}>
         <div className="max-w-[500px] mx-auto w-full flex flex-col h-full">
           <div className="mb-10 text-center">
-            {step.title && <h1 className="text-2xl sm:text-3xl font-black leading-tight text-[#0F172A] mb-4">{step.title}</h1>}
+            {step.title && <h1 className="text-2xl sm:text-3xl font-black leading-tight text-[#0F172A] mb-4 whitespace-pre-line">{step.title}</h1>}
             {step.subtitle && <p className="text-gray-500 font-medium leading-relaxed">{step.subtitle}</p>}
           </div>
 
@@ -244,9 +244,22 @@ const QuizPage: React.FC = () => {
           )}
 
           {step.type === 'intro' && (
-            <button onClick={() => handleNext()} className="w-full bg-[#FE2C55] text-white font-black py-6 rounded-[2rem] shadow-lg flex items-center justify-center gap-3">
+            <button onClick={() => handleNext()} className="w-full bg-[#FE2C55] text-white font-black py-6 rounded-[2rem] shadow-lg flex items-center justify-center gap-3 active:scale-95 transition-all">
               {step.buttonText} <ArrowRight size={20} />
             </button>
+          )}
+
+          {step.type === 'info' && (
+            <div className="flex flex-col flex-1 gap-8 animate-fade-in">
+              {step.image && (
+                <div className="w-full aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
+                  <img src={step.image} alt="Informação" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <button onClick={() => handleNext()} className="w-full bg-[#FE2C55] text-white font-black py-6 rounded-[2rem] shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all mt-auto">
+                {step.buttonText || "Continuar"} <ArrowRight size={20} />
+              </button>
+            </div>
           )}
 
           {step.type === 'processing' && (
