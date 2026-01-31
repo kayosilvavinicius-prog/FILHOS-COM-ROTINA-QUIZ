@@ -306,11 +306,11 @@ const SalesPage: React.FC = () => {
         <p className="font-black opacity-40 uppercase tracking-[0.1em]">© 2025 Filhos com Rotina • Todos os Direitos Reservados</p>
       </footer>
 
-      {/* Floating Sticky CTA */}
+      {/* Floating Sticky CTA - Atualizado para handlePurchase */}
       <div className={`fixed bottom-0 left-0 right-0 p-4 z-[200] transition-all duration-700 transform ${scrolled ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
         <div className="max-w-[500px] mx-auto">
           <button 
-            onClick={scrollToOffer} 
+            onClick={handlePurchase} 
             className="w-full bg-[#FE2C55] text-white font-[900] py-5 rounded-[2rem] shadow-[0_10px_40px_rgba(254,44,85,0.4)] border-2 border-white/20 uppercase tracking-wider text-sm flex items-center justify-center gap-2"
           >
             Quero Garantir Meu Acesso Agora
