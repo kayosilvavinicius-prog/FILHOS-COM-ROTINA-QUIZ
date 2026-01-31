@@ -77,9 +77,9 @@ const SalesPage: React.FC = () => {
         .animate-shine::after { content: ''; position: absolute; top: -50%; left: -100%; width: 50%; height: 200%; background: rgba(255, 255, 255, 0.3); transform: rotate(30deg); animation: shine 4s infinite; }
       `}} />
 
-      {/* Sticky Timer Banner */}
-      <div className="bg-[#FE2C55] text-white py-2 text-[10px] font-black uppercase tracking-[0.2em] sticky top-0 z-[100] flex items-center justify-center gap-2 px-4 shadow-lg">
-        <Timer size={14} /> Oferta expira em: {formatTimer(timeLeft)}
+      {/* Header Sticky - Texto Alterado conforme pedido */}
+      <div className="bg-[#FE2C55] text-white py-3 text-[11px] font-black uppercase tracking-[0.3em] sticky top-0 z-[100] flex items-center justify-center px-4 shadow-lg">
+        Filhos com Rotina
       </div>
 
       {/* 1. HERO SECTION */}
