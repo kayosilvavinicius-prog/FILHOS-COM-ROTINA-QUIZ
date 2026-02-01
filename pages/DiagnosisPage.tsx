@@ -173,7 +173,7 @@ const DiagnosisPage: React.FC = () => {
             </div>
             <div className="flex flex-col gap-4">
               <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border-2 border-[#34C759]/30 shadow-2xl ring-4 ring-[#34C759]/10">
-                <img src="https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/45b6d41935979ee738350aed1a78aa0a3090aac4/MÉTODO D4K.png" className="w-full h-full object-cover" alt="Depois" />
+                <img src="https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/45b6d41935979ee738350aed1a78aa0a3090aac4/DEPOIS.png" className="w-full h-full object-cover" alt="Depois" />
               </div>
               <span className="text-[10px] font-black text-[#34C759] uppercase tracking-tight">COM MÉTODO</span>
             </div>
