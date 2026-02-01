@@ -68,37 +68,48 @@ const ScratchCardOffer: React.FC<{ onComplete: () => void }> = ({ onComplete }) 
 
   return (
     <div className="relative w-full min-h-[420px] bg-white rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes vigorous-scratch-big {
+          0% { transform: translate(0, 0) rotate(0); }
+          20% { transform: translate(-100px, -30px) rotate(-15deg); }
+          40% { transform: translate(100px, 15px) rotate(15deg); }
+          60% { transform: translate(-80px, 30px) rotate(-10deg); }
+          80% { transform: translate(80px, -15px) rotate(10deg); }
+          100% { transform: translate(0, 0) rotate(0); }
+        }
+        .animate-hand-vivid-big { animation: vigorous-scratch-big 1.1s infinite ease-in-out; }
+      `}} />
       <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-red-50">
         <div className="text-[#FE2C55] mb-4 animate-bounce"><Sparkles size={40} fill="currentColor" /></div>
         <h4 className="font-black text-[#0F172A] text-lg leading-tight mb-4 uppercase">
-          VOCÊ GANHOU ACESSO AO APLICATIVO FILHOS COM ROTINA + PLANNER SEMANAL! 🚀
+          VOCÊ GANHOU ACESSO AO APLICATIVO FILHOS COM ROTINA + PLANNER SEMANAL PARA IMPRESSÃO - POR 19,90. 🚀
         </h4>
         <div className="bg-white/60 p-4 rounded-2xl mb-6 text-left w-full max-w-[280px]">
           <div className="flex items-center gap-2 text-xs font-bold text-gray-700 mb-1">
-            <Check size={14} className="text-green-500" /> App Rotina Visual
+            <Check size={14} className="text-green-500" /> App Rotina Visual (Acesso Imediato)
           </div>
           <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
-            <Check size={14} className="text-green-500" /> Planner para Impressão
+            <Check size={14} className="text-green-500" /> Planner Semanal em PDF (Para Imprimir)
           </div>
         </div>
         <div className="flex items-baseline gap-2 mb-6">
-          <span className="text-gray-400 line-through text-sm">R$ 97,00</span>
-          <span className="text-3xl font-black text-[#FE2C55]">R$ 19,90</span>
+          <span className="text-gray-400 line-through text-sm font-bold">R$ 97,00</span>
+          <span className="text-4xl font-black text-[#FE2C55]">R$ 19,90</span>
         </div>
         <button 
           onClick={() => {
             funnelTracker.track("DIAGNOSTICO_CLICOU_CHECKOUT");
             window.location.href = CHECKOUT_URL;
           }}
-          className="w-full bg-[#FE2C55] text-white font-black py-5 rounded-full shadow-lg active:scale-95 transition-all border-b-4 border-red-800 flex items-center justify-center gap-2"
+          className="w-full bg-[#FE2C55] text-white font-black py-6 rounded-full shadow-lg active:scale-95 transition-all border-b-6 border-red-800 flex items-center justify-center gap-2 uppercase tracking-tighter"
         >
-          APROVEITAR AGORA <ArrowRight size={18} />
+          LIBERAR TUDO AGORA <ArrowRight size={18} />
         </button>
       </div>
       <canvas ref={canvasRef} width={400} height={420} className={`absolute inset-0 w-full h-full cursor-pointer transition-opacity duration-1000 ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} />
       {!isScratched && (
-        <div className="absolute bottom-10 right-10 pointer-events-none animate-hand-scratch">
-          <Hand size={56} className="text-[#FE2C55] drop-shadow-lg" />
+        <div className="absolute bottom-20 right-10 pointer-events-none animate-hand-vivid-big">
+          <Hand size={72} className="text-[#FE2C55] drop-shadow-xl" />
         </div>
       )}
     </div>
@@ -187,30 +198,31 @@ const DiagnosisPage: React.FC = () => {
             <div className="inline-flex items-center gap-2 bg-[#FE2C55] text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 shadow-lg shadow-red-500/20">
               <Gift size={14} /> PRESENTE DE ATIVAÇÃO
             </div>
-            <h3 className="text-2xl font-black text-[#0F172A] mb-3 tracking-tighter">Raspe para descobrir como começar a resolver sua rotina ainda hoje:</h3>
-            <p className="text-gray-500 text-sm font-medium mb-10 leading-relaxed">Libere agora a solução que vai transformar suas manhãs e noites.</p>
+            <h3 className="text-2xl font-black text-[#0F172A] mb-3 tracking-tighter uppercase">RASPE PARA DESCOBRIR COMO COMEÇAR A RESOLVER SUA ROTINA AINDA HOJE:</h3>
+            <p className="text-gray-500 text-sm font-medium mb-10 leading-relaxed italic">"Libere agora a solução tecnológica que vai dar autonomia para seu filho e descanso para você."</p>
           </div>
           
           <ScratchCardOffer onComplete={() => funnelTracker.track("DIAGNOSTICO_RASPADINHA_REVELADA")} />
 
           <div className="pt-8 space-y-8">
-            <div className="bg-amber-50 border border-amber-100 p-6 rounded-[2rem] flex items-start gap-4">
-              <AlertTriangle className="text-amber-500 shrink-0" size={24} />
+            <div className="bg-amber-50 border border-amber-100 p-8 rounded-[2.5rem] flex items-start gap-4 shadow-sm">
+              <AlertTriangle className="text-amber-500 shrink-0" size={32} />
               <div>
-                <p className="text-[13px] font-bold text-amber-900 leading-snug">
-                  ⚠️ Essa é a única forma de adquirir o App e se sair da tela vai perder a chance. Este cupom de R$ 19,90 expira ao fechar esta página.
+                <p className="text-[14px] font-black text-amber-900 leading-snug uppercase tracking-tight">
+                  ESSA É A UNICA FORMA DE ADQUIRIR O APP E SE SAIR DA TELA VAI PERDER A CHANCE. 🚨
                 </p>
+                <p className="text-[12px] text-amber-700 mt-2 font-medium">Este cupom de desconto exclusivo é temporário e vinculado ao seu diagnóstico.</p>
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-4 bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100">
-               <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-[#34C759] shadow-sm">
-                 <Award size={32} />
+            <div className="flex flex-col items-center gap-6 bg-gray-50 p-10 rounded-[3rem] border border-gray-100">
+               <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-[#34C759] shadow-md border border-gray-100">
+                 <Award size={48} />
                </div>
                <div className="text-center">
-                 <h4 className="font-black text-[#0F172A] text-sm mb-1">GARANTIA INCONDICIONAL DE 30 DIAS</h4>
-                 <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
-                   Teste o aplicativo e o planner por 30 dias. Se a rotina da sua casa não mudar, devolvemos cada centavo sem perguntas.
+                 <h4 className="font-black text-[#0F172A] text-lg mb-2 uppercase">GARANTIA INCONDICIONAL DE 30 DIAS</h4>
+                 <p className="text-[12px] text-gray-500 font-bold leading-relaxed px-4">
+                   Teste o aplicativo e o planner por 30 dias inteiros. Se a rotina da sua casa não mudar completamente, nós devolvemos cada centavo do seu investimento imediatamente.
                  </p>
                </div>
             </div>
@@ -219,7 +231,7 @@ const DiagnosisPage: React.FC = () => {
 
         <div className="flex flex-col items-center gap-4 opacity-30 py-10">
           <Lock size={24} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Conexão Segura e Criptografada</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">Pagamento Seguro e Processamento Criptografado</span>
         </div>
       </main>
 

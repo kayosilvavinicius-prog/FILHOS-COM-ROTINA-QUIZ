@@ -26,7 +26,7 @@ const QUESTIONS: Question[] = [
   { id: 'crenca', time: 186, text: "Você acredita que se ele entendesse melhor o dia, ele cooperaria mais?", options: ["Sim, faz sentido", "Talvez", "Nunca pensei nisso"], trackKey: "VSL_RESPOSTA_CRENCA" }
 ];
 
-const ScratchCardHeader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+const ScratchCardHeader: React.FC<{ onUnlock: () => void }> = ({ onUnlock }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [isScratched, setIsScratched] = useState(false);
@@ -38,15 +38,15 @@ const ScratchCardHeader: React.FC<{ onComplete: () => void }> = ({ onComplete })
     if (!ctx) return;
     ctx.fillStyle = '#E2E8F0';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.font = 'bold 14px sans-serif';
+    ctx.font = 'bold 16px sans-serif';
     ctx.fillStyle = '#94A3B8';
     ctx.textAlign = 'center';
-    ctx.fillText('RASPE PARA SEU PRESENTE 🎁', canvas.width / 2, canvas.height / 2 + 5);
+    ctx.fillText('RASPE PARA LIBERAR SEU PRESENTE', canvas.width / 2, canvas.height / 2 + 5);
 
     const scratch = (x: number, y: number) => {
       ctx.globalCompositeOperation = 'destination-out';
       ctx.beginPath();
-      ctx.arc(x, y, 20, 0, Math.PI * 2);
+      ctx.arc(x, y, 25, 0, Math.PI * 2);
       ctx.fill();
       if (!isScratched) setIsScratched(true);
     };
@@ -64,35 +64,43 @@ const ScratchCardHeader: React.FC<{ onComplete: () => void }> = ({ onComplete })
 
   useEffect(() => {
     if (isScratched && !isRevealed) {
-      const timer = setTimeout(() => {
-        setIsRevealed(true);
-        onComplete();
-      }, 1500);
+      const timer = setTimeout(() => setIsRevealed(true), 1500);
       return () => clearTimeout(timer);
     }
   }, [isScratched]);
 
   return (
-    <div className="relative w-full h-[180px] rounded-[2rem] overflow-hidden bg-white shadow-lg border border-gray-100">
+    <div className="relative w-full h-[220px] rounded-[2.5rem] overflow-hidden bg-white shadow-2xl border-4 border-white mb-8">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes vigorous-scratch {
+          0% { transform: translate(0, 0) rotate(0); }
+          20% { transform: translate(-80px, -20px) rotate(-15deg); }
+          40% { transform: translate(80px, 10px) rotate(15deg); }
+          60% { transform: translate(-70px, 20px) rotate(-10deg); }
+          80% { transform: translate(70px, -10px) rotate(10deg); }
+          100% { transform: translate(0, 0) rotate(0); }
+        }
+        .animate-hand-vivid { animation: vigorous-scratch 1.2s infinite ease-in-out; }
+      `}} />
       <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-red-50">
-        <div className="text-[#FE2C55] mb-2"><Gift size={24} fill="currentColor" /></div>
-        <p className="font-black text-[#0F172A] text-sm leading-tight mb-3">
-          VOCÊ ACABOU DE GANHAR O GUIA FILHOS COM ROTINA EM PDF GRATUITAMENTE! 🎁
+        <div className="text-[#FE2C55] mb-2"><Gift size={32} fill="currentColor" /></div>
+        <p className="font-black text-[#0F172A] text-[15px] leading-tight mb-2 uppercase">
+          VOCÊ ACABOU DE GANHAR O GUIA FILHOS COM ROTINA EM PDF DE FORMA GRATUITA! 🎁
         </p>
-        <p className="text-[10px] text-gray-500 font-bold mb-4 uppercase tracking-tighter">
-          Assista o vídeo abaixo e responda o quiz para liberar. Leva apenas 3 minutinhos.
+        <p className="text-[11px] text-gray-500 font-bold mb-4 leading-tight">
+          ASSISTA O VÍDEO ABAIXO E RESPONDA O QUIZ PARA LIBERAR, LEVA APENAS 3 MINUTINHOS.
         </p>
         <button 
-          onClick={() => document.getElementById('video-section')?.scrollIntoView({ behavior: 'smooth' })}
-          className="bg-[#FE2C55] text-white text-[11px] font-black py-3 px-6 rounded-full shadow-lg active:scale-95 transition-all flex items-center gap-2"
+          onClick={onUnlock}
+          className="bg-[#FE2C55] text-white text-[13px] font-black py-4 px-8 rounded-full shadow-xl active:scale-95 transition-all flex items-center gap-2 border-b-4 border-red-800 uppercase tracking-tight"
         >
-          SEGUIR PARA LIBERAR MEU PRESENTE <ArrowRight size={14} />
+          SEGUIR PARA LIBERAR MEU PRESENTE <ArrowRight size={16} />
         </button>
       </div>
-      <canvas ref={canvasRef} width={400} height={200} className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} />
+      <canvas ref={canvasRef} width={400} height={220} className={`absolute inset-0 w-full h-full cursor-pointer transition-opacity duration-1000 ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} />
       {!isScratched && (
-        <div className="absolute bottom-4 right-8 pointer-events-none animate-bounce">
-          <Hand size={32} className="text-[#FE2C55]/40" />
+        <div className="absolute bottom-10 right-10 pointer-events-none animate-hand-vivid">
+          <Hand size={56} className="text-[#FE2C55]/60 drop-shadow-md" />
         </div>
       )}
     </div>
@@ -107,6 +115,7 @@ const SalesPage: React.FC = () => {
   const [activeQuestion, setActiveQuestion] = useState<Question | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [videoEnded, setVideoEnded] = useState(false);
+  const [videoUnlocked, setVideoUnlocked] = useState(false);
   const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -141,6 +150,25 @@ const SalesPage: React.FC = () => {
     if (videoRef.current && !videoEnded) videoRef.current.play().catch(() => {});
   };
 
+  const unlockVideo = () => {
+    setVideoUnlocked(true);
+    funnelTracker.track("DIAGNOSTICO_RASPADINHA_REVELADA");
+    setTimeout(() => {
+      const container = document.getElementById('video-container');
+      if (container) {
+        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => {
+          // Fallback if play fails (needs interaction, which we just had)
+          videoRef.current!.muted = true;
+          setIsMuted(true);
+          videoRef.current!.play();
+        });
+      }
+    }, 150);
+  };
+
   const goToCapture = () => {
     navigate('/captura', { state: { answers } });
   };
@@ -148,23 +176,22 @@ const SalesPage: React.FC = () => {
   return (
     <div className="bg-[#FAF9F6] min-h-screen flex flex-col items-center justify-start overflow-x-hidden relative text-[#0F172A] pb-20">
       <header className="w-full bg-white px-6 py-10 text-center shadow-sm relative z-50">
-        <div className="max-w-[550px] mx-auto space-y-4">
-          <h2 className="text-[#FE2C55] font-black text-[11px] uppercase tracking-[0.2em] mb-2 flex items-center justify-center gap-2">
-            <Sparkles size={14} /> OI, MÃE! QUERO TE PARABENIZAR POR CHEGAR ATÉ AQUI.
+        <div className="max-w-[550px] mx-auto space-y-6">
+          <h2 className="text-[#FE2C55] font-black text-[14px] sm:text-[16px] uppercase tracking-tight leading-tight px-4">
+            OI, MÃE! QUERO TE PARABENIZAR POR CHEGAR ATÉ AQUI. 🌟
           </h2>
           <div className="px-2">
-            <ScratchCardHeader onComplete={() => funnelTracker.track("DIAGNOSTICO_RASPADINHA_REVELADA")} />
+            <ScratchCardHeader onUnlock={unlockVideo} />
           </div>
         </div>
       </header>
 
-      <div id="video-section" className="relative w-full max-w-[450px] aspect-[9/16] bg-black shadow-2xl overflow-hidden mt-6 mb-10 sm:rounded-[3rem] border-4 border-white ring-8 ring-white/10">
+      <div id="video-container" className={`relative w-full max-w-[450px] aspect-[9/16] bg-black shadow-2xl overflow-hidden mt-6 mb-10 sm:rounded-[3rem] border-4 border-white ring-8 ring-white/10 transition-all duration-1000 origin-top ${videoUnlocked ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-20 scale-95 pointer-events-none absolute'}`}>
         <video
           ref={videoRef}
           src={VSL_VIDEO_URL}
           className="w-full h-full object-cover"
           playsInline
-          autoPlay
           muted={isMuted}
           onTimeUpdate={handleTimeUpdate}
         />
@@ -198,8 +225,8 @@ const SalesPage: React.FC = () => {
             <h2 className="text-2xl font-black text-[#0F172A] mb-4 tracking-tighter uppercase leading-tight">
               Você não vai ganhar apenas o Guia...
             </h2>
-            <p className="text-gray-500 font-medium mb-10 leading-relaxed px-4 text-sm">
-              Como você respondeu todas as perguntas, também vai receber um <span className="text-[#FE2C55] font-bold">Diagnóstico Exclusivo</span> da sua rotina atual.
+            <p className="text-gray-500 font-medium mb-10 leading-relaxed px-4 text-sm italic">
+              "Como você respondeu todas as perguntas, também vai receber um <span className="text-[#FE2C55] font-bold">Diagnóstico Exclusivo</span> da sua rotina atual."
             </p>
             <button 
               onClick={goToCapture}
@@ -210,6 +237,13 @@ const SalesPage: React.FC = () => {
           </div>
         )}
       </div>
+      
+      {!videoUnlocked && (
+        <div className="py-20 flex flex-col items-center gap-4 text-gray-300">
+          <Play size={48} className="opacity-20" />
+          <p className="text-[10px] font-black uppercase tracking-widest">Vídeo Bloqueado até liberar o presente</p>
+        </div>
+      )}
     </div>
   );
 };
