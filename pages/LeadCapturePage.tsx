@@ -16,9 +16,11 @@ const LeadCapturePage: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Rastrear leads na planilha (os dados vão como uma string concatenada no campo 'data')
-    const leadData = `Nome: ${formData.name} | E-mail: ${formData.email} | Tel: ${formData.phone}`;
-    funnelTracker.track("CHECKOUT_INICIADO", leadData); // Usamos um step de checkout para marcar a intenção forte
+    // Salvar informações do lead no tracker para persistência na planilha
+    funnelTracker.updateLeadInfo(formData.name, formData.email, formData.phone);
+    
+    // Rastrear a etapa de captura concluída
+    funnelTracker.track("CHECKOUT_INICIADO", "Formulário de captura preenchido");
 
     setTimeout(() => {
       navigate('/diagnostico', { state: { answers, lead: formData } });

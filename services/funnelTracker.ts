@@ -74,7 +74,6 @@ class FunnelTracker {
     const utmSource = urlParams.get('utm_source')?.toLowerCase() || "";
     const mode = urlParams.get('mode')?.toLowerCase() || "";
 
-    // Se estiver em modo teste explicitamente ou se for dev sem mode=prod, marcamos como Teste
     if (mode === "test" || (this.isDevelopment() && mode !== "prod")) {
       return "Teste";
     }
@@ -87,13 +86,30 @@ class FunnelTracker {
   }
 
   /**
+   * Salva as informações do lead localmente para enviá-las em rastreamentos futuros.
+   */
+  updateLeadInfo(name: string, email: string, phone: string) {
+    localStorage.setItem('funnel_lead_name', name);
+    localStorage.setItem('funnel_lead_email', email);
+    localStorage.setItem('funnel_lead_phone', phone);
+  }
+
+  private getLeadData() {
+    return {
+      name: localStorage.getItem('funnel_lead_name') || "",
+      email: localStorage.getItem('funnel_lead_email') || "",
+      phone: localStorage.getItem('funnel_lead_phone') || ""
+    };
+  }
+
+  /**
    * @param step O identificador da etapa do funil
    * @param data Valor opcional da resposta ou metadado
    */
   async track(step: FunnelStep, data?: string) {
     const source = this.getSource();
+    const lead = this.getLeadData();
     
-    // Logamos no console para depuração sempre que for etapa de VSL
     if (step.startsWith("VSL_")) {
       console.log(`[FunnelTracker] Rastreando: ${step} - Resposta: ${data}`);
     }
@@ -103,11 +119,13 @@ class FunnelTracker {
       step: step,
       data: data || "", 
       source: source,
+      name: lead.name,
+      email: lead.email,
+      phone: lead.phone,
       timestamp: new Date().toISOString()
     };
 
     try {
-      // Para Google Apps Script com no-cors, não enviamos headers de JSON para evitar preflight (OPTIONS)
       fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
