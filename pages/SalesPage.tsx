@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Volume2, VolumeX, ArrowRight, FileText, CheckCircle2, Sparkles, MessageSquare } from 'lucide-react';
-import { funnelTracker } from '../services/funnelTracker';
+import { funnelTracker, FunnelStep } from '../services/funnelTracker';
 
 const VSL_VIDEO_URL = "https://res.cloudinary.com/dafhibb8s/video/upload/v1767185181/MINI_VSL_40MB_-_FILHOS_COM_ROTINA_jgqf44.mp4";
 
@@ -15,63 +15,24 @@ interface Question {
   time: number;
   text: string;
   options: string[];
+  trackKey: FunnelStep;
 }
 
 const QUESTIONS: Question[] = [
-  { 
-    id: 'idade', 
-    time: 5, 
-    text: "Qual a idade do seu filho?", 
-    options: ["2 a 4 anos", "5 a 7 anos", "8 a 10 anos"] 
-  },
-  { 
-    id: 'rotina', 
-    time: 15, 
-    text: "Como é a rotina do seu filho hoje?", 
-    options: ["Tem horários, mas vive dando conflito", "É organizada, mas com muitos conflitos no dia a dia", "Bastante bagunçada e cansativa", "Não temos uma rotina definida"] 
-  },
-  { 
-    id: 'reacao', 
-    time: 28, 
-    text: "Quando seu filho resiste, o que mais acontece?", 
-    options: ["Chora, grita ou se joga no chão", "Explode em birra", "Discute e tenta negociar como adulto", "Finge que não escuta"] 
-  },
-  { 
-    id: 'sentimento', 
-    time: 42, 
-    text: "Como você costuma se sentir com essa situação?", 
-    options: ["Cansada", "Irritada", "Culpada", "Sem saber o que fazer", "Tudo isso"] 
-  },
-  { 
-    id: 'clima', 
-    time: 58, 
-    text: "Como costuma ficar o clima na sua casa?", 
-    options: ["Estressante", "Imprevisível", "Muito cansativo", "Parece um campo de batalha"] 
-  },
-  { 
-    id: 'futuro', 
-    time: 75, 
-    text: "Se nada mudar, como você imagina isso daqui a alguns meses?", 
-    options: ["Mais desgaste", "Mais conflitos", "Criança cada vez mais resistente", "Não quero nem pensar nisso"] 
-  },
-  { 
-    id: 'aprendizado', 
-    time: 92, 
-    text: "Seu filho entende melhor quando você mostra ou apenas explica?", 
-    options: ["Quando vê", "Quando escuta", "Um pouco dos dois"] 
-  },
-  { 
-    id: 'crenca', 
-    time: 110, 
-    text: "Você acredita que se ele entendesse melhor o dia, ele cooperaria mais?", 
-    options: ["Sim, faz sentido", "Talvez", "Nunca pensei nisso"] 
-  }
+  { id: 'idade', time: 5, text: "Qual a idade do seu filho?", options: ["2 a 4 anos", "5 a 7 anos", "8 a 10 anos"], trackKey: "VSL_RESPOSTA_IDADE" },
+  { id: 'rotina', time: 15, text: "Como é a rotina do seu filho hoje?", options: ["Tem horários, mas vive dando conflito", "É organizada, mas com muitos conflitos no dia a dia", "Bastante bagunçada e cansativa", "Não temos uma rotina definida"], trackKey: "VSL_RESPOSTA_ROTINA" },
+  { id: 'reacao', time: 28, text: "Quando seu filho resiste, o que mais acontece?", options: ["Chora, grita ou se joga no chão", "Explode em birra", "Discute e tenta negociar como adulto", "Finge que não escuta"], trackKey: "VSL_RESPOSTA_REACAO" },
+  { id: 'sentimento', time: 42, text: "Como você costuma se sentir com essa situação?", options: ["Cansada", "Irritada", "Culpada", "Sem saber o que fazer", "Tudo isso"], trackKey: "VSL_RESPOSTA_SENTIMENTO" },
+  { id: 'clima', time: 58, text: "Como costuma ficar o clima na sua casa?", options: ["Estressante", "Imprevisível", "Muito cansativo", "Parece um campo de batalha"], trackKey: "VSL_RESPOSTA_CLIMA" },
+  { id: 'futuro', time: 75, text: "Se nada mudar, como você imagina isso daqui a alguns meses?", options: ["Mais desgaste", "Mais conflitos", "Criança cada vez mais resistente", "Não quero nem pensar nisso"], trackKey: "VSL_RESPOSTA_FUTURO" },
+  { id: 'aprendizado', time: 92, text: "Seu filho entende melhor quando você mostra ou apenas explica?", options: ["Quando vê", "Quando escuta", "Um pouco dos dois"], trackKey: "VSL_RESPOSTA_APRENDIZADO" },
+  { id: 'crenca', time: 110, text: "Você acredita que se ele entendesse melhor o dia, ele cooperaria mais?", options: ["Sim, faz sentido", "Talvez", "Nunca pensei nisso"], trackKey: "VSL_RESPOSTA_CRENCA" }
 ];
 
 const SalesPage: React.FC = () => {
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(false); // Iniciar com áudio ativado
+  const [isMuted, setIsMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -84,9 +45,7 @@ const SalesPage: React.FC = () => {
   useEffect(() => {
     funnelTracker.track("ENTROU_PAGINA_VENDAS");
     if (videoRef.current) {
-      // Tentar iniciar com áudio
       videoRef.current.play().catch(() => {
-        // Se falhar (devido a restrições de autoplay do navegador), tenta mutado
         if (videoRef.current) {
           videoRef.current.muted = true;
           setIsMuted(true);
@@ -106,14 +65,15 @@ const SalesPage: React.FC = () => {
       setProgress((time / duration) * 100);
     }
 
-    // Encerrar o vídeo no ponto da fala específica (3:26:30)
+    // Encerrar o vídeo no ponto solicitado
     if (time >= CONCLUDE_TIMESTAMP && !videoEnded) {
       videoRef.current.pause();
       setVideoEnded(true);
       setShowFloatingCTA(false);
+      funnelTracker.track("VSL_VIDEO_CONCLUIDO");
     }
 
-    // Mostrar botão flutuante a partir de 3:17:00
+    // Botão flutuante
     if (time >= SHOW_CTA_TIMESTAMP && time < CONCLUDE_TIMESTAMP && !videoEnded) {
       if (!showFloatingCTA) setShowFloatingCTA(true);
     }
@@ -127,6 +87,9 @@ const SalesPage: React.FC = () => {
   const handleAnswer = (option: string) => {
     if (!activeQuestion) return;
     
+    // RASTREIO DA PERGUNTA RESPONDIDA
+    funnelTracker.track(activeQuestion.trackKey);
+
     setAnswers(prev => ({ ...prev, [activeQuestion.id]: option }));
     setAnsweredIds(prev => new Set(prev).add(activeQuestion.id));
     setActiveQuestion(null);
@@ -144,6 +107,7 @@ const SalesPage: React.FC = () => {
   };
 
   const goToDiagnosis = () => {
+    funnelTracker.track("VSL_CLICOU_VER_DIAGNOSTICO");
     navigate('/diagnostico', { state: { answers } });
   };
 
@@ -197,7 +161,6 @@ const SalesPage: React.FC = () => {
           {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
         </button>
 
-        {/* CTA Flutuante conforme tempo solicitado (3:17:00) */}
         {showFloatingCTA && (
           <div className="absolute bottom-10 left-0 right-0 px-6 z-50 animate-slide-up">
             <button 
@@ -257,14 +220,6 @@ const SalesPage: React.FC = () => {
           </div>
         )}
       </div>
-
-      {!videoEnded && (
-        <div className="py-8 px-6 text-center max-w-[400px]">
-          <p className="text-gray-400 text-[10px] uppercase font-black tracking-[0.2em] opacity-60">
-            Responda e receba o diagnóstico completo
-          </p>
-        </div>
-      )}
     </div>
   );
 };

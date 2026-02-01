@@ -17,6 +17,7 @@ import {
   Check
 } from 'lucide-react';
 import IOSStatusBar from '../components/iOSStatusBar';
+import { funnelTracker } from '../services/funnelTracker';
 
 const CHECKOUT_URL = "https://pay.cakto.com.br/8orm8zt_705304";
 
@@ -31,7 +32,7 @@ const ScratchCard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.fillStyle = '#CBD5E1'; // slate-300
+    ctx.fillStyle = '#CBD5E1'; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     ctx.font = 'bold 16px Inter';
@@ -79,6 +80,12 @@ const ScratchCard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     }
   }, [isScratched]);
 
+  const handleCheckoutClick = () => {
+    // RASTREIO CLIQUE CHECKOUT
+    funnelTracker.track("DIAGNOSTICO_CLICOU_CHECKOUT");
+    window.location.href = CHECKOUT_URL;
+  };
+
   return (
     <div className="relative w-full min-h-[340px] bg-white rounded-[2.5rem] border-4 border-white shadow-2xl overflow-hidden group">
       <style dangerouslySetInnerHTML={{ __html: `
@@ -93,7 +100,6 @@ const ScratchCard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
         }
       `}} />
 
-      {/* Conteúdo Revelado - Oferta Detalhada */}
       <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-red-50 overflow-y-auto">
         <div className="text-[#FE2C55] mb-2 animate-bounce shrink-0">
           <Sparkles size={32} fill="currentColor" />
@@ -117,14 +123,13 @@ const ScratchCard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
         </div>
 
         <button 
-          onClick={() => window.location.href = CHECKOUT_URL}
+          onClick={handleCheckoutClick}
           className="bg-[#FE2C55] text-white text-[13px] font-black py-4 px-8 rounded-full shadow-lg active:scale-95 transition-all flex items-center gap-2 border-b-4 border-red-700 shrink-0"
         >
           APROVEITAR AGORA <ArrowRight size={16} />
         </button>
       </div>
 
-      {/* Camada de Raspar */}
       <canvas 
         ref={canvasRef} 
         width={400} 
@@ -152,6 +157,11 @@ const DiagnosisPage: React.FC = () => {
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
   const answers = location.state?.answers || {};
 
+  useEffect(() => {
+    // RASTREIO ACESSO DIAGNÓSTICO
+    funnelTracker.track("DIAGNOSTICO_ACESSO");
+  }, []);
+
   const getDiagnostic = () => {
     const rotina = answers.rotina || "";
     if (rotina.includes("Sem horários")) return "Hoje seu filho vive em um estado de alerta constante, pois a falta de previsibilidade torna cada mudança de atividade uma ameaça ao controle dele.";
@@ -161,6 +171,12 @@ const DiagnosisPage: React.FC = () => {
 
   const toggleAccordion = (index: number) => {
     setOpenAccordion(openAccordion === index ? null : index);
+  };
+
+  const handleScratchComplete = () => {
+    setShowBonus(true);
+    // RASTREIO RASPADINHA REVELADA
+    funnelTracker.track("DIAGNOSTICO_RASPADINHA_REVELADA");
   };
 
   return (
@@ -180,8 +196,6 @@ const DiagnosisPage: React.FC = () => {
       </header>
 
       <main className="max-w-[500px] mx-auto px-6 space-y-12">
-        
-        {/* Bloco Diagnóstico */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-[#FE2C55]">
             <MapPin size={16} />
@@ -195,7 +209,6 @@ const DiagnosisPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Mapa de Progresso */}
         <div className="space-y-8">
           <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sua trilha de evolução</span>
           <div className="relative pt-6 pb-12 px-2">
@@ -216,7 +229,6 @@ const DiagnosisPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Transformação Esperada */}
         <div className="space-y-6 text-center pt-4">
           <h3 className="font-black text-gray-400 uppercase tracking-widest text-[11px]">Meta de Transformação</h3>
           <div className="grid grid-cols-2 gap-5">
@@ -235,7 +247,6 @@ const DiagnosisPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Itens do Diagnóstico (Accordions) */}
         <div className="space-y-4">
           <div 
             onClick={() => toggleAccordion(1)}
@@ -282,7 +293,6 @@ const DiagnosisPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Raspadinha - Segunda Chance */}
         <div className="pt-10 pb-10 space-y-6">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 bg-[#FE2C55] text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
@@ -292,7 +302,7 @@ const DiagnosisPage: React.FC = () => {
             <p className="text-gray-500 text-sm font-medium mb-8 leading-relaxed">Raspe abaixo e libere seu bônus de ativação imediata.</p>
           </div>
           
-          <ScratchCard onComplete={() => setShowBonus(true)} />
+          <ScratchCard onComplete={handleScratchComplete} />
 
           {showBonus && (
             <div className="animate-fade-in text-center pt-4">
@@ -301,7 +311,6 @@ const DiagnosisPage: React.FC = () => {
           )}
         </div>
 
-        {/* Rodapé de Segurança */}
         <div className="flex flex-col items-center gap-4 opacity-40 py-10 border-t border-gray-100">
           <Lock size={28} />
           <span className="text-[10px] font-black uppercase tracking-widest">Diagnóstico Pessoal e Protegido</span>

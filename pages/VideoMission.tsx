@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, MessageCircle, Share2, Volume2, VolumeX, ArrowRight, Play, Plus, AlertTriangle, Loader2 } from 'lucide-react';
@@ -14,6 +15,8 @@ const VideoMission: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [showCTA, setShowCTA] = useState(false);
   const [hasError, setHasError] = useState(false);
+  // Track if completion event has already been sent to avoid duplicate tracking on every time update
+  const trackedCompletion = useRef(false);
 
   const profileImg = "https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA/33b5814f67fd820ca815cac9094f790e29102d28/ALINE%20WHATSAPP.jpg";
 
@@ -27,7 +30,8 @@ const VideoMission: React.FC = () => {
       if (shouldShow !== showCTA) setShowCTA(shouldShow);
 
       // Rastrear conclusão se chegar perto do fim
-      if (duration > 0 && currentTime / duration > 0.95) {
+      if (duration > 0 && currentTime / duration > 0.95 && !trackedCompletion.current) {
+        trackedCompletion.current = true;
         funnelTracker.track("ETAPA_3_VSL_CONCLUIDA");
       }
     }
