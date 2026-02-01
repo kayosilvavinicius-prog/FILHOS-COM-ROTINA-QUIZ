@@ -137,7 +137,7 @@ const SalesPage: React.FC = () => {
     const q = QUESTIONS.find(q => Math.floor(time) === q.time && !answeredIds.has(q.id));
     if (q && !activeQuestion) {
       setActiveQuestion(q);
-      videoRef.current.pause();
+      // NÃO PAUSAR O VÍDEO - MANTER O VIDEO RODANDO
     }
   };
 
@@ -147,7 +147,7 @@ const SalesPage: React.FC = () => {
     setAnswers(prev => ({ ...prev, [activeQuestion.id]: option }));
     setAnsweredIds(prev => new Set(prev).add(activeQuestion.id));
     setActiveQuestion(null);
-    if (videoRef.current && !videoEnded) videoRef.current.play().catch(() => {});
+    // VÍDEO JÁ ESTÁ RODANDO, NÃO PRECISA CHAMAR PLAY
   };
 
   const unlockVideo = () => {
@@ -160,7 +160,6 @@ const SalesPage: React.FC = () => {
       }
       if (videoRef.current) {
         videoRef.current.play().catch(() => {
-          // Fallback if play fails (needs interaction, which we just had)
           videoRef.current!.muted = true;
           setIsMuted(true);
           videoRef.current!.play();
