@@ -19,7 +19,7 @@ interface Question {
 }
 
 const QUESTIONS: Question[] = [
-  { id: 'idade', time: 5, text: "Qual a idade do seu filho?", options: ["2 a 4 anos", "5 a 7 anos", "8 a 10 anos"], trackKey: "VSL_RESPOSTA_IDADE" },
+  { id: 'reconhecimento', time: 5, text: "Em qual dessas situações você mais se reconhece?", options: ["Falo várias vezes até virar grito", "Aviso, mas ele parece não ouvir", "O dia começa bem e termina em caos", "Cada mudança de atividade vira uma luta"], trackKey: "VSL_RESPOSTA_RECONHECIMENTO" },
   { id: 'rotina', time: 15, text: "Como é a rotina do seu filho hoje?", options: ["Tem horários, mas vive dando conflito", "É organizada, mas com muitos conflitos no dia a dia", "Bastante bagunçada e cansativa", "Não temos uma rotina definida"], trackKey: "VSL_RESPOSTA_ROTINA" },
   { id: 'reacao', time: 28, text: "Quando seu filho resiste, o que mais acontece?", options: ["Chora, grita ou se joga no chão", "Explode em birra", "Discute e tenta negociar como adulto", "Finge que não escuta"], trackKey: "VSL_RESPOSTA_REACAO" },
   { id: 'sentimento', time: 42, text: "Como você costuma se sentir com essa situação?", options: ["Cansada", "Irritada", "Culpada", "Sem saber o que fazer", "Tudo isso"], trackKey: "VSL_RESPOSTA_SENTIMENTO" },
@@ -87,7 +87,7 @@ const SalesPage: React.FC = () => {
   const handleAnswer = (option: string) => {
     if (!activeQuestion) return;
     
-    // RASTREIO DA PERGUNTA RESPONDIDA - Agora enviando o valor da opção
+    // RASTREIO DA PERGUNTA RESPONDIDA 
     funnelTracker.track(activeQuestion.trackKey, option);
 
     setAnswers(prev => ({ ...prev, [activeQuestion.id]: option }));
@@ -121,15 +121,14 @@ const SalesPage: React.FC = () => {
       `}} />
 
       <header className="w-full bg-white px-6 py-8 text-center shadow-sm relative z-50">
-        <div className="max-w-[500px] mx-auto space-y-4">
+        <div className="max-w-[550px] mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 bg-red-50 text-[#FE2C55] px-4 py-1.5 rounded-full font-black text-[10px] uppercase tracking-[0.2em] mb-2">
             <span className="flex items-center gap-2"><Sparkles size={14} /> DIAGNÓSTICO GRATUITO</span>
           </div>
-          <p className="text-[#0F172A] text-[15px] sm:text-[17px] font-bold leading-relaxed tracking-tight">
-            Mãe, preparei algo especial para você: Um diagnóstico gratuito sobre a rotina atual de <span className="text-[#FE2C55]">seu filho</span>.
-          </p>
-          <p className="text-gray-500 text-[13px] font-medium leading-relaxed italic">
-            Agora é só assistir ao vídeo e interagir respondendo algumas perguntinhas.
+          <p className="text-[#0F172A] text-[15px] sm:text-[16px] font-bold leading-relaxed tracking-tight">
+            Se você sente que está sempre repetindo a mesma coisa e seu filho não coopera, fique até o final.<br/>
+            Em poucos minutos, você vai entender o que está confundindo o cérebro do seu filho<br/>
+            e como organizar o dia dele de um jeito tão simples que a cooperação começa ainda hoje.
           </p>
         </div>
       </header>
@@ -174,8 +173,8 @@ const SalesPage: React.FC = () => {
         )}
 
         {activeQuestion && (
-          <div className="absolute inset-0 z-40 bg-black/30 flex items-center justify-center p-6 backdrop-blur-[4px]">
-            <div className="bg-white/80 backdrop-blur-xl w-full rounded-[2.5rem] p-8 shadow-2xl animate-slide-up border border-white/50">
+          <div className="absolute inset-0 z-40 bg-black/20 flex items-center justify-center p-6 backdrop-blur-[2px]">
+            <div className="bg-white/90 backdrop-blur-xl w-full rounded-[2.5rem] p-8 shadow-2xl animate-slide-up border border-white/40">
               <div className="flex justify-center mb-5 text-[#FE2C55]">
                 <MessageSquare size={24} fill="currentColor" />
               </div>
@@ -187,7 +186,7 @@ const SalesPage: React.FC = () => {
                   <button
                     key={i}
                     onClick={() => handleAnswer(opt)}
-                    className="w-full bg-white/90 hover:bg-white text-[#0F172A] font-bold py-4 rounded-2xl border border-white shadow-sm active:scale-95 transition-all text-sm px-4 text-center leading-tight"
+                    className="w-full bg-white/95 hover:bg-white text-[#0F172A] font-bold py-4 rounded-2xl border border-white shadow-sm active:scale-95 transition-all text-sm px-4 text-center leading-tight"
                   >
                     {opt}
                   </button>

@@ -22,6 +22,7 @@ type QuizStepOption = {
 
 type QuizStep = {
   id: number;
+  key?: string;
   title?: string;
   subtitle?: string;
   type: 'intro' | 'single' | 'multi' | 'info' | 'processing' | 'result';
@@ -34,7 +35,7 @@ type QuizStep = {
 const QuizPage: React.FC = () => {
   const navigate = useNavigate();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, any>>({});
+  const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isExiting, setIsExiting] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,6 +43,7 @@ const QuizPage: React.FC = () => {
   const STEPS: QuizStep[] = [
     {
       id: 0,
+      key: 'inicio',
       title: "Descubra como está a rotina do seu filho",
       subtitle: "e receba um Guia Personalizado de Rotina do Seu Filho. Leva menos de 2 minutos.",
       type: 'intro',
@@ -49,18 +51,8 @@ const QuizPage: React.FC = () => {
       trackStep: "ETAPA_1_INICIOU_JORNADA"
     },
     {
-      id: 1,
-      title: "Qual a idade do seu filho?",
-      type: 'single',
-      trackStep: "ETAPA_2_IDADE",
-      options: [
-        { label: "2 a 4 anos", image: "https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/003b34385a2ab02007ebe5b919fcf5abe9a5cdb7/2%20a%204%20anos.png" },
-        { label: "5 a 7 anos", image: "https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/003b34385a2ab02007ebe5b919fcf5abe9a5cdb7/5%20a%207%20anos.png" },
-        { label: "8 a 10 anos", image: "https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/003b34385a2ab02007ebe5b919fcf5abe9a5cdb7/8%20a%2010%20anos.png" }
-      ]
-    },
-    {
       id: 2,
+      key: 'rotina',
       title: "Como é a rotina do seu filho hoje?",
       type: 'single',
       trackStep: "ETAPA_3_ROTINA_ATUAL",
@@ -68,6 +60,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 3,
+      key: 'conflitos',
       title: "Em quais momentos surgem mais conflitos?",
       type: 'multi',
       trackStep: "ETAPA_4_CONFLITOS",
@@ -76,6 +69,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 4,
+      key: 'reacao',
       title: "Quando seu filho resiste, o que mais acontece?",
       type: 'single',
       trackStep: "ETAPA_5_REACAO",
@@ -83,6 +77,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 5,
+      key: 'sentimento',
       title: "Quando isso se repete no dia a dia, como você costuma se sentir?",
       type: 'single',
       trackStep: "ETAPA_6_SENTIMENTO_MAE",
@@ -90,6 +85,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 6,
+      key: 'clima',
       title: "Quando isso se repete, como costuma ficar o clima na sua casa?",
       type: 'single',
       trackStep: "ETAPA_7_CLIMA_DA_CASA",
@@ -97,6 +93,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 7,
+      key: 'futuro',
       title: "Se nada mudar, como você imagina isso daqui a alguns meses?",
       type: 'single',
       trackStep: "ETAPA_8_FUTURO",
@@ -104,6 +101,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 8,
+      key: 'info_previsibilidade',
       title: "Criança calma não é sorte.\nÉ previsibilidade.",
       subtitle: "A maioria das birras acontece porque a criança não consegue entender a sequência do dia.",
       type: 'info',
@@ -113,6 +111,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 9,
+      key: 'transicoes',
       title: "No dia a dia, seu filho costuma entender qual é o momento de cada atividade?",
       type: 'single',
       trackStep: "ETAPA_10_TRANSICOES",
@@ -120,6 +119,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 10,
+      key: 'mudanca',
       title: "E quando chega a hora de mudar de uma atividade para outra, o que costuma acontecer?",
       type: 'single',
       trackStep: "ETAPA_11_CRENCIA",
@@ -127,6 +127,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 11,
+      key: 'crenca',
       title: "Você acredita que, se seu filho entendesse melhor como o dia funciona, ele cooperaria mais?",
       type: 'single',
       trackStep: "ETAPA_11_CRENCIA",
@@ -134,6 +135,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 12,
+      key: 'solucao',
       title: "No dia a dia, seu filho entende melhor quando você mostra ou quando apenas explica?",
       type: 'single',
       trackStep: "ETAPA_13_SOLUCAO_VISUAL",
@@ -141,6 +143,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 14,
+      key: 'processando',
       title: "Processando seu diagnóstico...",
       subtitle: "Aguarde enquanto analisamos sua rotina.",
       type: 'processing',
@@ -149,6 +152,7 @@ const QuizPage: React.FC = () => {
     },
     {
       id: 15,
+      key: 'resultado',
       title: "Seu Guia Personalizado de Rotina do Seu Filho está pronto",
       subtitle: "Com base nas suas respostas, reunimos os ajustes certos para reduzir conflitos e trazer mais cooperação para o dia a dia da sua casa.",
       type: 'result',
@@ -161,26 +165,26 @@ const QuizPage: React.FC = () => {
     let score = 0;
     const maxScore = 15;
 
-    // Analisar Etapa 2 (Rotina atual)
-    const q2 = answers[2];
-    if (q2 === "É organizada, mas com muitos conflitos no dia a dia") score += 3;
-    if (q2 === "Tem horários, mas vive dando conflito") score += 2;
-    if (q2 === "Não temos uma rotina definida") score += 1;
-    if (q2 === "Bastante bagunçada e cansativa") score += 0;
+    // Analisar Etapa (Rotina atual)
+    const qRotina = answers['rotina'];
+    if (qRotina === "É organizada, mas com muitos conflitos no dia a dia") score += 3;
+    if (qRotina === "Tem horários, mas vive dando conflito") score += 2;
+    if (qRotina === "Não temos uma rotina definida") score += 1;
+    if (qRotina === "Bastante bagunçada e cansativa") score += 0;
 
-    // Analisar Etapa 9 (Entendimento de transição)
-    const q9 = answers[9];
-    if (q9 === "Sim, na maior parte do tempo") score += 5;
-    if (q9 === "Em alguns momentos") score += 3;
-    if (q9 === "Raramente") score += 1;
+    // Analisar Etapa (Entendimento de transição)
+    const qTrans = answers['transicoes'];
+    if (qTrans === "Sim, na maior parte do tempo") score += 5;
+    if (qTrans === "Em alguns momentos") score += 3;
+    if (qTrans === "Raramente") score += 1;
     
-    // Analisar Etapa 10 (Reação à mudança)
-    const q10 = answers[10];
-    if (q10 === "Ele coopera") score += 5;
-    if (q10 === "Reclama um pouco") score += 3;
-    if (q10 === "Sempre resiste") score += 1;
+    // Analisar Etapa (Reação à mudança)
+    const qMudanca = answers['mudanca'];
+    if (qMudanca === "Ele coopera") score += 5;
+    if (qMudanca === "Reclama um pouco") score += 3;
+    if (qMudanca === "Sempre resiste") score += 1;
 
-    const percentage = Math.min(Math.max((score / maxScore) * 100, 15), 85); // Mantém o pino em área visível
+    const percentage = Math.min(Math.max((score / maxScore) * 100, 15), 85); 
     
     let text = "";
     if (percentage < 35) {
@@ -204,18 +208,16 @@ const QuizPage: React.FC = () => {
   const handleNext = (answer?: any) => {
     const currentStep = STEPS[currentStepIndex];
     
-    // RASTREIO - Agora enviando o valor da resposta se houver
     if (currentStep.trackStep) {
-      // Se for multi, formata como string separada por vírgula
-      const trackData = Array.isArray(answer || answers[currentStepIndex]) 
-        ? (answer || answers[currentStepIndex]).join(", ") 
-        : (answer || answers[currentStepIndex]);
+      const trackData = Array.isArray(answer || answers[currentStep.key || currentStepIndex]) 
+        ? (answer || answers[currentStep.key || currentStepIndex]).join(", ") 
+        : (answer || answers[currentStep.key || currentStepIndex]);
       
       funnelTracker.track(currentStep.trackStep, trackData?.toString());
     }
 
-    if (answer !== undefined) {
-      setAnswers(prev => ({ ...prev, [currentStepIndex]: answer }));
+    if (answer !== undefined && currentStep.key) {
+      setAnswers(prev => ({ ...prev, [currentStep.key!]: answer }));
     }
 
     if (currentStepIndex < STEPS.length - 1) {
@@ -232,11 +234,13 @@ const QuizPage: React.FC = () => {
   };
 
   const handleMultiSelect = (option: string) => {
-    const current = answers[currentStepIndex] || [];
+    const currentStep = STEPS[currentStepIndex];
+    if (!currentStep.key) return;
+    const current = answers[currentStep.key] || [];
     const updated = current.includes(option)
       ? current.filter((i: string) => i !== option)
       : [...current, option];
-    setAnswers(prev => ({ ...prev, [currentStepIndex]: updated }));
+    setAnswers(prev => ({ ...prev, [currentStep.key!]: updated }));
   };
 
   const toggleAccordion = (index: number) => {
@@ -295,7 +299,7 @@ const QuizPage: React.FC = () => {
           {step.type === 'multi' && step.options && (
             <div className="space-y-3 mb-8">
               {(step.options as string[]).map((option, idx) => {
-                const isSelected = (answers[currentStepIndex] || []).includes(option);
+                const isSelected = (answers[step.key!] || []).includes(option);
                 return (
                   <button key={idx} onClick={() => handleMultiSelect(option)} className={`w-full p-6 rounded-[2rem] text-left font-bold text-[17px] shadow-sm transition-all flex justify-between items-center border ${isSelected ? 'bg-red-50 border-[#FE2C55] text-[#FE2C55]' : 'bg-white border-gray-100 text-[#0F172A]'}`}>
                     {option}

@@ -10,7 +10,6 @@ export type FunnelStep =
   // Etapas Iniciais (Quiz Antigo / Jornada)
   | "ETAPA_1_CARREGOU_PAGINA"
   | "ETAPA_1_INICIOU_JORNADA"
-  | "ETAPA_2_IDADE"
   | "ETAPA_3_ROTINA_ATUAL"
   | "ETAPA_4_CONFLITOS"
   | "ETAPA_5_REACAO"
@@ -27,7 +26,7 @@ export type FunnelStep =
   
   // Novas Etapas Estratégicas (VSL Interativa na SalesPage)
   | "ENTROU_PAGINA_VENDAS"
-  | "VSL_RESPOSTA_IDADE"
+  | "VSL_RESPOSTA_RECONHECIMENTO"
   | "VSL_RESPOSTA_ROTINA"
   | "VSL_RESPOSTA_REACAO"
   | "VSL_RESPOSTA_SENTIMENTO"
@@ -101,7 +100,7 @@ class FunnelTracker {
     const payload = {
       userId: this.userId,
       step: step,
-      data: data || "", // Envia a resposta selecionada
+      data: data || "", 
       source: source,
       timestamp: new Date().toISOString()
     };
