@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -202,8 +203,15 @@ const QuizPage: React.FC = () => {
 
   const handleNext = (answer?: any) => {
     const currentStep = STEPS[currentStepIndex];
+    
+    // RASTREIO - Agora enviando o valor da resposta se houver
     if (currentStep.trackStep) {
-      funnelTracker.track(currentStep.trackStep);
+      // Se for multi, formata como string separada por vírgula
+      const trackData = Array.isArray(answer || answers[currentStepIndex]) 
+        ? (answer || answers[currentStepIndex]).join(", ") 
+        : (answer || answers[currentStepIndex]);
+      
+      funnelTracker.track(currentStep.trackStep, trackData?.toString());
     }
 
     if (answer !== undefined) {

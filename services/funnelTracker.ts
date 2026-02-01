@@ -86,17 +86,22 @@ class FunnelTracker {
     return "Direto";
   }
 
-  async track(step: FunnelStep) {
+  /**
+   * @param step O identificador da etapa do funil
+   * @param data Valor opcional da resposta ou metadado (ex: a opção escolhida no quiz)
+   */
+  async track(step: FunnelStep, data?: string) {
     const source = this.getSource();
     
     if (source === "Teste") {
-      console.info(`%c[FunnelTracker] TRACK: ${step}`, "color: #FE2C55; font-weight: bold;");
+      console.info(`%c[FunnelTracker] TRACK: ${step} | DATA: ${data || "N/A"}`, "color: #FE2C55; font-weight: bold;");
       return;
     }
 
     const payload = {
       userId: this.userId,
       step: step,
+      data: data || "", // Envia a resposta selecionada
       source: source,
       timestamp: new Date().toISOString()
     };

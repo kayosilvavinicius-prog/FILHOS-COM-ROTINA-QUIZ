@@ -87,8 +87,8 @@ const SalesPage: React.FC = () => {
   const handleAnswer = (option: string) => {
     if (!activeQuestion) return;
     
-    // RASTREIO DA PERGUNTA RESPONDIDA
-    funnelTracker.track(activeQuestion.trackKey);
+    // RASTREIO DA PERGUNTA RESPONDIDA - Agora enviando o valor da opção
+    funnelTracker.track(activeQuestion.trackKey, option);
 
     setAnswers(prev => ({ ...prev, [activeQuestion.id]: option }));
     setAnsweredIds(prev => new Set(prev).add(activeQuestion.id));
