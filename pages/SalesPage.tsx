@@ -154,7 +154,7 @@ const SalesPage: React.FC = () => {
             <span className="flex items-center gap-2"><Sparkles size={14} /> DIAGNÓSTICO GRATUITO</span>
           </div>
           <p className="text-[#0F172A] text-[15px] sm:text-[17px] font-bold leading-relaxed tracking-tight">
-            Mãe, preparamos algo especial para você: Um diagnóstico gratuito sobre a rotina atual de <span className="text-[#FE2C55]">seu filho</span>.
+            Mãe, preparei algo especial para você: Um diagnóstico gratuito sobre a rotina atual de <span className="text-[#FE2C55]">seu filho</span>.
           </p>
           <p className="text-gray-500 text-[13px] font-medium leading-relaxed italic">
             Agora é só assistir ao vídeo e interagir respondendo algumas perguntinhas.
