@@ -18,15 +18,16 @@ interface Question {
   trackKey: FunnelStep;
 }
 
+// Cronograma ajustado: Início aos 30s, Fim aos 186s (20s antes de 206.5s), com ~22s de intervalo
 const QUESTIONS: Question[] = [
-  { id: 'reconhecimento', time: 5, text: "Em qual dessas situações você mais se reconhece?", options: ["Falo várias vezes até virar grito", "Aviso, mas ele parece não ouvir", "O dia começa bem e termina em caos", "Cada mudança de atividade vira uma luta"], trackKey: "VSL_RESPOSTA_RECONHECIMENTO" },
-  { id: 'rotina', time: 15, text: "Como é a rotina do seu filho hoje?", options: ["Tem horários, mas vive dando conflito", "É organizada, mas com muitos conflitos no dia a dia", "Bastante bagunçada e cansativa", "Não temos uma rotina definida"], trackKey: "VSL_RESPOSTA_ROTINA" },
-  { id: 'reacao', time: 28, text: "Quando seu filho resiste, o que mais acontece?", options: ["Chora, grita ou se joga no chão", "Explode em birra", "Discute e tenta negociar como adulto", "Finge que não escuta"], trackKey: "VSL_RESPOSTA_REACAO" },
-  { id: 'sentimento', time: 42, text: "Como você costuma se sentir com essa situação?", options: ["Cansada", "Irritada", "Culpada", "Sem saber o que fazer", "Tudo isso"], trackKey: "VSL_RESPOSTA_SENTIMENTO" },
-  { id: 'clima', time: 58, text: "Como costuma ficar o clima na sua casa?", options: ["Estressante", "Imprevisível", "Muito cansativo", "Parece um campo de batalha"], trackKey: "VSL_RESPOSTA_CLIMA" },
-  { id: 'futuro', time: 75, text: "Se nada mudar, como você imagina isso daqui a alguns meses?", options: ["Mais desgaste", "Mais conflitos", "Criança cada vez mais resistente", "Não quero nem pensar nisso"], trackKey: "VSL_RESPOSTA_FUTURO" },
-  { id: 'aprendizado', time: 92, text: "Seu filho entende melhor quando você mostra ou apenas explica?", options: ["Quando vê", "Quando escuta", "Um pouco dos dois"], trackKey: "VSL_RESPOSTA_APRENDIZADO" },
-  { id: 'crenca', time: 110, text: "Você acredita que se ele entendesse melhor o dia, ele cooperaria mais?", options: ["Sim, faz sentido", "Talvez", "Nunca pensei nisso"], trackKey: "VSL_RESPOSTA_CRENCA" }
+  { id: 'reconhecimento', time: 30, text: "Em qual dessas situações você mais se reconhece?", options: ["Falo várias vezes até virar grito", "Aviso, mas ele parece não ouvir", "O dia começa bem e termina em caos", "Cada mudança de atividade vira uma luta"], trackKey: "VSL_RESPOSTA_RECONHECIMENTO" },
+  { id: 'rotina', time: 52, text: "Como é a rotina do seu filho hoje?", options: ["Tem horários, mas vive dando conflito", "É organizada, mas com muitos conflitos no dia a dia", "Bastante bagunçada e cansativa", "Não temos uma rotina definida"], trackKey: "VSL_RESPOSTA_ROTINA" },
+  { id: 'reacao', time: 74, text: "Quando seu filho resiste, o que mais acontece?", options: ["Chora, grita ou se joga no chão", "Explode em birra", "Discute e tenta negociar como adulto", "Finge que não escuta"], trackKey: "VSL_RESPOSTA_REACAO" },
+  { id: 'sentimento', time: 96, text: "Como você costuma se sentir com essa situação?", options: ["Cansada", "Irritada", "Culpada", "Sem saber o que fazer", "Tudo isso"], trackKey: "VSL_RESPOSTA_SENTIMENTO" },
+  { id: 'clima', time: 118, text: "Como costuma ficar o clima na sua casa?", options: ["Estressante", "Imprevisível", "Muito cansativo", "Parece um campo de batalha"], trackKey: "VSL_RESPOSTA_CLIMA" },
+  { id: 'futuro', time: 140, text: "Se nada mudar, como você imagina isso daqui a alguns meses?", options: ["Mais de desgaste", "Mais conflitos", "Criança cada vez mais resistente", "Não quero nem pensar nisso"], trackKey: "VSL_RESPOSTA_FUTURO" },
+  { id: 'aprendizado', time: 162, text: "Seu filho entende melhor quando você mostra ou apenas explica?", options: ["Quando vê", "Quando escuta", "Um pouco dos dois"], trackKey: "VSL_RESPOSTA_APRENDIZADO" },
+  { id: 'crenca', time: 186, text: "Você acredita que se ele entendesse melhor o dia, ele cooperaria mais?", options: ["Sim, faz sentido", "Talvez", "Nunca pensei nisso"], trackKey: "VSL_RESPOSTA_CRENCA" }
 ];
 
 const SalesPage: React.FC = () => {
@@ -127,8 +128,8 @@ const SalesPage: React.FC = () => {
           </div>
           <p className="text-[#0F172A] text-[15px] sm:text-[16px] font-bold leading-relaxed tracking-tight">
             Se você sente que está sempre repetindo a mesma coisa e seu filho não coopera, fique até o final.<br/>
-            Em poucos minutos, você vai entender o que está confundindo o cérebro do seu filho<br/>
-            e como organizar o dia dele de um jeito tão simples que a cooperação começa ainda hoje.
+            Em poucos minutos, você vai entender o que está confundindo <span className="text-[#FE2C55]">o cérebro do seu filho</span><br/>
+            e como organizar o dia dele de um jeito tão simples que a cooperação <span className="text-[#FE2C55]">começa ainda hoje</span>.
           </p>
         </div>
       </header>
