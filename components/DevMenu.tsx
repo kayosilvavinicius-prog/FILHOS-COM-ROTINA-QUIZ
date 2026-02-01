@@ -21,7 +21,8 @@ const DevMenu: React.FC = () => {
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 left-4 z-[999] bg-black/80 text-white p-3 rounded-full shadow-2xl backdrop-blur-md border border-white/10 active:scale-90 transition-all"
+        className="fixed bottom-0 left-0 z-[999] w-12 h-12 bg-transparent opacity-0 cursor-default"
+        aria-hidden="true"
       >
         <Settings size={20} />
       </button>

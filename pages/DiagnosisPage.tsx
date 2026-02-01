@@ -16,7 +16,6 @@ import {
   Hand,
   Check
 } from 'lucide-react';
-import IOSStatusBar from '../components/iOSStatusBar';
 import { funnelTracker } from '../services/funnelTracker';
 
 const CHECKOUT_URL = "https://pay.cakto.com.br/8orm8zt_705304";
@@ -181,9 +180,7 @@ const DiagnosisPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] font-sans pb-24 overflow-x-hidden">
-      <IOSStatusBar dark />
-      
-      <header className="px-6 pt-10 pb-8 text-center max-w-[600px] mx-auto space-y-4">
+      <header className="px-6 pt-16 pb-8 text-center max-w-[600px] mx-auto space-y-4">
         <div className="flex justify-center mb-4">
           <CheckCircle2 size={48} className="text-green-500" />
         </div>
@@ -298,7 +295,7 @@ const DiagnosisPage: React.FC = () => {
             <div className="inline-flex items-center gap-2 bg-[#FE2C55] text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
               <Gift size={14} /> PRESENTE PARA VOCÊ
             </div>
-            <h3 className="text-xl font-black text-[#0F172A] mb-2 tracking-tighter">Uma chance extra de começar hoje</h3>
+            <h3 className="text-xl font-black text-[#0F172A] mb-2 tracking-tighter">Começe a mudar a Rotina da sua casa Hoje!</h3>
             <p className="text-gray-500 text-sm font-medium mb-8 leading-relaxed">Raspe abaixo e libere seu bônus de ativação imediata.</p>
           </div>
           
