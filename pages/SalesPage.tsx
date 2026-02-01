@@ -71,7 +71,7 @@ const QUESTIONS: Question[] = [
 const SalesPage: React.FC = () => {
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false); // Iniciar com áudio ativado
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -84,7 +84,15 @@ const SalesPage: React.FC = () => {
   useEffect(() => {
     funnelTracker.track("ENTROU_PAGINA_VENDAS");
     if (videoRef.current) {
-      videoRef.current.play().catch(() => setIsPlaying(false));
+      // Tentar iniciar com áudio
+      videoRef.current.play().catch(() => {
+        // Se falhar (devido a restrições de autoplay do navegador), tenta mutado
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          setIsMuted(true);
+          videoRef.current.play().catch(() => setIsPlaying(false));
+        }
+      });
     }
   }, []);
 
