@@ -74,6 +74,7 @@ class FunnelTracker {
     const utmSource = urlParams.get('utm_source')?.toLowerCase() || "";
     const mode = urlParams.get('mode')?.toLowerCase() || "";
 
+    // Se estiver em modo teste explicitamente ou se for dev sem mode=prod, marcamos como Teste
     if (mode === "test" || (this.isDevelopment() && mode !== "prod")) {
       return "Teste";
     }
@@ -87,14 +88,14 @@ class FunnelTracker {
 
   /**
    * @param step O identificador da etapa do funil
-   * @param data Valor opcional da resposta ou metadado (ex: a opção escolhida no quiz)
+   * @param data Valor opcional da resposta ou metadado
    */
   async track(step: FunnelStep, data?: string) {
     const source = this.getSource();
     
-    if (source === "Teste") {
-      console.info(`%c[FunnelTracker] TRACK: ${step} | DATA: ${data || "N/A"}`, "color: #FE2C55; font-weight: bold;");
-      return;
+    // Logamos no console para depuração sempre que for etapa de VSL
+    if (step.startsWith("VSL_")) {
+      console.log(`[FunnelTracker] Rastreando: ${step} - Resposta: ${data}`);
     }
 
     const payload = {
@@ -106,10 +107,10 @@ class FunnelTracker {
     };
 
     try {
+      // Para Google Apps Script com no-cors, não enviamos headers de JSON para evitar preflight (OPTIONS)
       fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
     } catch (error) {

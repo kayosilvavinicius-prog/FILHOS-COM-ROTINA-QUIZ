@@ -6,7 +6,7 @@ import { funnelTracker, FunnelStep } from '../services/funnelTracker';
 
 const VSL_VIDEO_URL = "https://res.cloudinary.com/dafhibb8s/video/upload/v1767185181/MINI_VSL_40MB_-_FILHOS_COM_ROTINA_jgqf44.mp4";
 
-// Timestamps solicitados: 3:26:30 (206.5s) para encerrar e 3:17:00 (197s) para o botão
+// Timestamps: 206.5s para encerrar e 197s para o botão flutuante
 const CONCLUDE_TIMESTAMP = 206.5; 
 const SHOW_CTA_TIMESTAMP = 197;
 
@@ -18,14 +18,14 @@ interface Question {
   trackKey: FunnelStep;
 }
 
-// Cronograma ajustado: Início aos 30s, Fim aos 186s (20s antes de 206.5s), com ~22s de intervalo
+// Cronograma: Início aos 30s, Fim aos 186s (20s antes de 206.5s)
 const QUESTIONS: Question[] = [
   { id: 'reconhecimento', time: 30, text: "Em qual dessas situações você mais se reconhece?", options: ["Falo várias vezes até virar grito", "Aviso, mas ele parece não ouvir", "O dia começa bem e termina em caos", "Cada mudança de atividade vira uma luta"], trackKey: "VSL_RESPOSTA_RECONHECIMENTO" },
   { id: 'rotina', time: 52, text: "Como é a rotina do seu filho hoje?", options: ["Tem horários, mas vive dando conflito", "É organizada, mas com muitos conflitos no dia a dia", "Bastante bagunçada e cansativa", "Não temos uma rotina definida"], trackKey: "VSL_RESPOSTA_ROTINA" },
   { id: 'reacao', time: 74, text: "Quando seu filho resiste, o que mais acontece?", options: ["Chora, grita ou se joga no chão", "Explode em birra", "Discute e tenta negociar como adulto", "Finge que não escuta"], trackKey: "VSL_RESPOSTA_REACAO" },
   { id: 'sentimento', time: 96, text: "Como você costuma se sentir com essa situação?", options: ["Cansada", "Irritada", "Culpada", "Sem saber o que fazer", "Tudo isso"], trackKey: "VSL_RESPOSTA_SENTIMENTO" },
   { id: 'clima', time: 118, text: "Como costuma ficar o clima na sua casa?", options: ["Estressante", "Imprevisível", "Muito cansativo", "Parece um campo de batalha"], trackKey: "VSL_RESPOSTA_CLIMA" },
-  { id: 'futuro', time: 140, text: "Se nada mudar, como você imagina isso daqui a alguns meses?", options: ["Mais de desgaste", "Mais conflitos", "Criança cada vez mais resistente", "Não quero nem pensar nisso"], trackKey: "VSL_RESPOSTA_FUTURO" },
+  { id: 'futuro', time: 140, text: "Se nada mudar, como você imagina isso daqui a alguns meses?", options: ["Mais desgaste", "Mais conflitos", "Criança cada vez mais resistente", "Não quero nem pensar nisso"], trackKey: "VSL_RESPOSTA_FUTURO" },
   { id: 'aprendizado', time: 162, text: "Seu filho entende melhor quando você mostra ou apenas explica?", options: ["Quando vê", "Quando escuta", "Um pouco dos dois"], trackKey: "VSL_RESPOSTA_APRENDIZADO" },
   { id: 'crenca', time: 186, text: "Você acredita que se ele entendesse melhor o dia, ele cooperaria mais?", options: ["Sim, faz sentido", "Talvez", "Nunca pensei nisso"], trackKey: "VSL_RESPOSTA_CRENCA" }
 ];
@@ -79,24 +79,29 @@ const SalesPage: React.FC = () => {
       if (!showFloatingCTA) setShowFloatingCTA(true);
     }
 
+    // Lógica de disparo de perguntas
     const q = QUESTIONS.find(q => Math.floor(time) === q.time && !answeredIds.has(q.id));
     if (q && !activeQuestion) {
       setActiveQuestion(q);
+      videoRef.current.pause(); // PAUSA O VÍDEO PARA A RESPOSTA
+      setIsPlaying(false);
     }
   };
 
   const handleAnswer = (option: string) => {
     if (!activeQuestion) return;
     
-    // RASTREIO DA PERGUNTA RESPONDIDA 
+    // RASTREIO DA PERGUNTA RESPONDIDA - Enviando opção para a planilha
     funnelTracker.track(activeQuestion.trackKey, option);
 
     setAnswers(prev => ({ ...prev, [activeQuestion.id]: option }));
     setAnsweredIds(prev => new Set(prev).add(activeQuestion.id));
     setActiveQuestion(null);
     
-    if (videoRef.current && videoRef.current.paused && !videoEnded) {
+    // RETOMA O VÍDEO APÓS A RESPOSTA
+    if (videoRef.current && !videoEnded) {
       videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
     }
   };
 
@@ -113,7 +118,7 @@ const SalesPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen flex flex-col items-center justify-start overflow-x-hidden relative">
+    <div className="bg-[#FAF9F6] min-h-screen flex flex-col items-center justify-start overflow-x-hidden relative text-[#0F172A]">
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
@@ -174,12 +179,12 @@ const SalesPage: React.FC = () => {
         )}
 
         {activeQuestion && (
-          <div className="absolute inset-0 z-40 bg-black/20 flex items-center justify-center p-6 backdrop-blur-[2px]">
-            <div className="bg-white/90 backdrop-blur-xl w-full rounded-[2.5rem] p-8 shadow-2xl animate-slide-up border border-white/40">
+          <div className="absolute inset-0 z-40 bg-black/30 flex items-center justify-center p-6 backdrop-blur-[4px]">
+            <div className="bg-white/95 backdrop-blur-xl w-full rounded-[2.5rem] p-8 shadow-2xl animate-slide-up border border-white/50">
               <div className="flex justify-center mb-5 text-[#FE2C55]">
                 <MessageSquare size={24} fill="currentColor" />
               </div>
-              <h3 className="text-xl font-black text-center text-[#0F172A] mb-8 leading-tight tracking-tight">
+              <h3 className="text-lg font-black text-center text-[#0F172A] mb-8 leading-tight tracking-tight">
                 {activeQuestion.text}
               </h3>
               <div className="grid gap-3">
@@ -187,7 +192,7 @@ const SalesPage: React.FC = () => {
                   <button
                     key={i}
                     onClick={() => handleAnswer(opt)}
-                    className="w-full bg-white/95 hover:bg-white text-[#0F172A] font-bold py-4 rounded-2xl border border-white shadow-sm active:scale-95 transition-all text-sm px-4 text-center leading-tight"
+                    className="w-full bg-white hover:bg-gray-50 text-[#0F172A] font-bold py-4 rounded-2xl border border-gray-100 shadow-sm active:scale-95 transition-all text-sm px-4 text-center leading-tight"
                   >
                     {opt}
                   </button>
