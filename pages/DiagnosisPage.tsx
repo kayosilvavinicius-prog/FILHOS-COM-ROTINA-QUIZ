@@ -4,9 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   ShieldCheck, 
   MapPin, 
-  Quote, 
-  Gift, 
-  ArrowRight, 
   Sparkles, 
   Tv, 
   LayoutGrid, 
@@ -14,30 +11,32 @@ import {
   Lock,
   CheckCircle2,
   Hand,
-  Check
+  Check,
+  Gift,
+  ArrowRight,
+  AlertTriangle,
+  Award
 } from 'lucide-react';
 import { funnelTracker } from '../services/funnelTracker';
 
 const CHECKOUT_URL = "https://pay.cakto.com.br/8orm8zt_705304";
 
-const ScratchCard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+const ScratchCardOffer: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isScratched, setIsScratched] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
+  const [isScratched, setIsScratched] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
-    ctx.fillStyle = '#CBD5E1'; 
+    ctx.fillStyle = '#CBD5E1';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    ctx.font = 'bold 16px Inter';
+    ctx.font = 'bold 16px sans-serif';
     ctx.fillStyle = '#64748B';
     ctx.textAlign = 'center';
-    ctx.fillText('RASPE AQUI PARA O PRESENTE', canvas.width / 2, canvas.height / 2 + 6);
+    ctx.fillText('RASPE PARA DESCOBRIR A SOLUÇÃO', canvas.width / 2, canvas.height / 2 + 5);
 
     const scratch = (x: number, y: number) => {
       ctx.globalCompositeOperation = 'destination-out';
@@ -47,103 +46,59 @@ const ScratchCard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
       if (!isScratched) setIsScratched(true);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (e.buttons !== 1) return;
+    const handleMove = (e: any) => {
       const rect = canvas.getBoundingClientRect();
-      scratch(e.clientX - rect.left, e.clientY - rect.top);
+      const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+      const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+      if (x && y) scratch(x, y);
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      const rect = canvas.getBoundingClientRect();
-      const touch = e.touches[0];
-      scratch(touch.clientX - rect.left, touch.clientY - rect.top);
-    };
-
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('touchmove', handleTouchMove);
-
-    return () => {
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('touchmove', handleTouchMove);
-    };
+    canvas.addEventListener('mousemove', (e) => e.buttons === 1 && handleMove(e));
+    canvas.addEventListener('touchmove', handleMove);
   }, []);
 
   useEffect(() => {
     if (isScratched && !isRevealed) {
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setIsRevealed(true);
         onComplete();
       }, 1500);
-      return () => clearTimeout(timer);
     }
   }, [isScratched]);
 
-  const handleCheckoutClick = () => {
-    // RASTREIO CLIQUE CHECKOUT
-    funnelTracker.track("DIAGNOSTICO_CLICOU_CHECKOUT");
-    window.location.href = CHECKOUT_URL;
-  };
-
   return (
-    <div className="relative w-full min-h-[340px] bg-white rounded-[2.5rem] border-4 border-white shadow-2xl overflow-hidden group">
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes handScratch {
-          0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
-          25% { transform: translateX(-40px) translateY(-10px) rotate(-15deg); }
-          50% { transform: translateX(0) translateY(0) rotate(0deg); }
-          75% { transform: translateX(-40px) translateY(-10px) rotate(-15deg); }
-        }
-        .animate-hand-scratch {
-          animation: handScratch 1.5s infinite ease-in-out;
-        }
-      `}} />
-
-      <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-red-50 overflow-y-auto">
-        <div className="text-[#FE2C55] mb-2 animate-bounce shrink-0">
-          <Sparkles size={32} fill="currentColor" />
-        </div>
-        <h4 className="font-black text-[#0F172A] text-[15px] sm:text-lg leading-tight mb-4 uppercase tracking-tighter">
-          Você ganhou o acesso ao sistema Filhos com Rotina por apenas 19,90!
+    <div className="relative w-full min-h-[420px] bg-white rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
+      <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-red-50">
+        <div className="text-[#FE2C55] mb-4 animate-bounce"><Sparkles size={40} fill="currentColor" /></div>
+        <h4 className="font-black text-[#0F172A] text-lg leading-tight mb-4 uppercase">
+          VOCÊ GANHOU ACESSO AO APLICATIVO FILHOS COM ROTINA + PLANNER SEMANAL! 🚀
         </h4>
-        
-        <div className="space-y-1.5 mb-6 text-left w-full max-w-[280px] mx-auto">
-          {[
-            "Sistema de Rotina Visual Digital (aplicativo)",
-            "Guia de Transições Sem Birras",
-            "Bônus: Tabela de Recompensas",
-            "Bônus: Ritual do Sono Perfeito"
-          ].map((item, idx) => (
-            <div key={idx} className="flex items-center gap-2 text-[11px] font-bold text-gray-600">
-              <Check size={14} className="text-green-500 shrink-0" strokeWidth={3} />
-              {item}
-            </div>
-          ))}
+        <div className="bg-white/60 p-4 rounded-2xl mb-6 text-left w-full max-w-[280px]">
+          <div className="flex items-center gap-2 text-xs font-bold text-gray-700 mb-1">
+            <Check size={14} className="text-green-500" /> App Rotina Visual
+          </div>
+          <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
+            <Check size={14} className="text-green-500" /> Planner para Impressão
+          </div>
         </div>
-
+        <div className="flex items-baseline gap-2 mb-6">
+          <span className="text-gray-400 line-through text-sm">R$ 97,00</span>
+          <span className="text-3xl font-black text-[#FE2C55]">R$ 19,90</span>
+        </div>
         <button 
-          onClick={handleCheckoutClick}
-          className="bg-[#FE2C55] text-white text-[13px] font-black py-4 px-8 rounded-full shadow-lg active:scale-95 transition-all flex items-center gap-2 border-b-4 border-red-700 shrink-0"
+          onClick={() => {
+            funnelTracker.track("DIAGNOSTICO_CLICOU_CHECKOUT");
+            window.location.href = CHECKOUT_URL;
+          }}
+          className="w-full bg-[#FE2C55] text-white font-black py-5 rounded-full shadow-lg active:scale-95 transition-all border-b-4 border-red-800 flex items-center justify-center gap-2"
         >
-          APROVEITAR AGORA <ArrowRight size={16} />
+          APROVEITAR AGORA <ArrowRight size={18} />
         </button>
       </div>
-
-      <canvas 
-        ref={canvasRef} 
-        width={400} 
-        height={400} 
-        className={`absolute inset-0 w-full h-full cursor-pointer transition-opacity duration-1000 ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-      />
-      
+      <canvas ref={canvasRef} width={400} height={420} className={`absolute inset-0 w-full h-full cursor-pointer transition-opacity duration-1000 ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} />
       {!isScratched && (
-        <div className="absolute bottom-8 right-12 pointer-events-none animate-hand-scratch">
-          <div className="relative">
-             <Hand size={48} className="text-[#FE2C55] fill-[#FE2C55]/20 drop-shadow-[0_10px_10px_rgba(0,0,0,0.2)]" strokeWidth={1.5} />
-             <div className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-sm border border-gray-100">
-                <Sparkles size={12} className="text-[#FFD700] animate-pulse" fill="currentColor" />
-             </div>
-          </div>
+        <div className="absolute bottom-10 right-10 pointer-events-none animate-hand-scratch">
+          <Hand size={56} className="text-[#FE2C55] drop-shadow-lg" />
         </div>
       )}
     </div>
@@ -152,12 +107,10 @@ const ScratchCard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 
 const DiagnosisPage: React.FC = () => {
   const location = useLocation();
-  const [showBonus, setShowBonus] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
   const answers = location.state?.answers || {};
 
   useEffect(() => {
-    // RASTREIO ACESSO DIAGNÓSTICO
     funnelTracker.track("DIAGNOSTICO_ACESSO");
   }, []);
 
@@ -165,30 +118,22 @@ const DiagnosisPage: React.FC = () => {
     const rotina = answers.rotina || "";
     if (rotina.includes("Sem horários")) return "Hoje seu filho vive em um estado de alerta constante, pois a falta de previsibilidade torna cada mudança de atividade uma ameaça ao controle dele.";
     if (rotina.includes("cansativa")) return "O cansaço que você sente hoje é o reflexo de uma rotina onde a criança resiste por não visualizar o fim das tarefas.";
-    return "Você já tem uma base, mas a falta de clareza visual faz com que a criança ainda dependa de você para lembrar cada passo, gerando cansaço mental.";
-  };
-
-  const toggleAccordion = (index: number) => {
-    setOpenAccordion(openAccordion === index ? null : index);
-  };
-
-  const handleScratchComplete = () => {
-    setShowBonus(true);
-    // RASTREIO RASPADINHA REVELADA
-    funnelTracker.track("DIAGNOSTICO_RASPADINHA_REVELADA");
+    return "Sua casa já tem uma base, mas a falta de clareza visual faz com que a criança ainda dependa de você para lembrar cada passo, gerando exaustão mental materna.";
   };
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] font-sans pb-24 overflow-x-hidden">
       <header className="px-6 pt-16 pb-8 text-center max-w-[600px] mx-auto space-y-4">
         <div className="flex justify-center mb-4">
-          <CheckCircle2 size={48} className="text-green-500" />
+          <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-500 shadow-sm">
+            <CheckCircle2 size={32} />
+          </div>
         </div>
         <h1 className="text-3xl font-[900] text-[#0F172A] tracking-tighter leading-tight uppercase">
-          Seu Guia de Rotina
+          Seu Diagnóstico de Rotina
         </h1>
         <p className="text-gray-500 font-medium px-4 leading-relaxed text-sm">
-          Analisamos as suas respostas e preparamos os ajustes certos para o seu filho.
+          Com base no que você nos contou, este é o caminho para recuperar a paz na sua casa.
         </p>
       </header>
 
@@ -196,7 +141,7 @@ const DiagnosisPage: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-[#FE2C55]">
             <MapPin size={16} />
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Ponto de partida atual</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Análise do momento atual</span>
           </div>
           <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-red-50 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-1.5 h-full bg-[#FE2C55]/10" />
@@ -206,111 +151,75 @@ const DiagnosisPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-8">
-          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sua trilha de evolução</span>
-          <div className="relative pt-6 pb-12 px-2">
-            <div className="h-[10px] w-full flex rounded-full overflow-hidden shadow-inner bg-gray-100">
-              <div className="w-1/3 h-full bg-[#FF6B6B]" />
-              <div className="w-1/3 h-full bg-[#FFD93D]" />
-              <div className="w-1/3 h-full bg-[#34C759]" />
-            </div>
-            <div className="absolute top-[16px] left-[35%] -translate-x-1/2 flex flex-col items-center">
-               <div className="w-[36px] h-[36px] rounded-full border-[5px] border-white bg-[#FE2C55] shadow-[0_5px_20px_rgba(254,44,85,0.4)] ring-4 ring-red-50" />
-               <div className="w-0.5 h-10 bg-red-100" />
-            </div>
-            <div className="flex justify-between mt-10 text-[9px] font-black text-gray-400 uppercase tracking-tight">
-              <span>VOCÊ HOJE</span>
-              <span>EM AJUSTE</span>
-              <span className="text-[#34C759]">IDEAL</span>
-            </div>
-          </div>
-        </div>
-
         <div className="space-y-6 text-center pt-4">
-          <h3 className="font-black text-gray-400 uppercase tracking-widest text-[11px]">Meta de Transformação</h3>
+          <h3 className="font-black text-gray-400 uppercase tracking-widest text-[11px]">Transformação Visual Desejada</h3>
           <div className="grid grid-cols-2 gap-5">
             <div className="flex flex-col gap-4">
               <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border-2 border-white shadow-lg bg-gray-200">
                 <img src="https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/45b6d41935979ee738350aed1a78aa0a3090aac4/ANTES.png" className="w-full h-full object-cover grayscale" alt="Antes" />
               </div>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">SEM SISTEMA</span>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">SEM CLAREZA</span>
             </div>
             <div className="flex flex-col gap-4">
               <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border-2 border-[#34C759]/30 shadow-2xl ring-4 ring-[#34C759]/10">
-                <img src="https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/45b6d41935979ee738350aed1a78aa0a3090aac4/DEPOIS.png" className="w-full h-full object-cover" alt="Depois" />
+                <img src="https://raw.githubusercontent.com/kayosilvavinicius-prog/FILHOS-COM-ROTINA-quiz-/45b6d41935979ee738350aed1a78aa0a3090aac4/MÉTODO D4K.png" className="w-full h-full object-cover" alt="Depois" />
               </div>
-              <span className="text-[10px] font-black text-[#34C759] uppercase tracking-tight">ROTINA VISUAL</span>
+              <span className="text-[10px] font-black text-[#34C759] uppercase tracking-tight">COM MÉTODO</span>
             </div>
           </div>
         </div>
 
         <div className="space-y-4">
-          <div 
-            onClick={() => toggleAccordion(1)}
-            className={`bg-white rounded-[2rem] shadow-sm border ${openAccordion === 1 ? 'border-red-100' : 'border-gray-100'} transition-all cursor-pointer overflow-hidden`}
-          >
+          <div onClick={() => setOpenAccordion(openAccordion === 1 ? null : 1)} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 transition-all cursor-pointer">
             <div className="p-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-[#FE2C55]">
-                  <Tv size={24} />
-                </div>
-                <h4 className="font-black text-[#0F172A] text-sm">Clareza Visual</h4>
+                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-[#FE2C55]"><Tv size={20} /></div>
+                <h4 className="font-black text-[#0F172A] text-sm">O Cérebro Visual</h4>
               </div>
               <ChevronDown size={20} className={`text-gray-300 transition-transform ${openAccordion === 1 ? 'rotate-180' : ''}`} />
             </div>
-            {openAccordion === 1 && (
-              <div className="px-6 pb-8 pt-0 animate-fade-in">
-                <p className="text-[#0F172A] text-[13px] font-medium leading-relaxed opacity-70">
-                  O cérebro infantil processa imagens 60 mil vezes mais rápido que palavras. Ao mostrar o que ele deve fazer em vez de apenas falar, você reduz a resistência imediata.
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div 
-            onClick={() => toggleAccordion(2)}
-            className={`bg-white rounded-[2rem] shadow-sm border ${openAccordion === 2 ? 'border-red-100' : 'border-gray-100'} transition-all cursor-pointer overflow-hidden`}
-          >
-            <div className="p-6 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-[#FE2C55]">
-                  <LayoutGrid size={24} />
-                </div>
-                <h4 className="font-black text-[#0F172A] text-sm">Poder de Escolha</h4>
-              </div>
-              <ChevronDown size={20} className={`text-gray-300 transition-transform ${openAccordion === 2 ? 'rotate-180' : ''}`} />
-            </div>
-            {openAccordion === 2 && (
-              <div className="px-6 pb-8 pt-0 animate-fade-in">
-                <p className="text-[#0F172A] text-[13px] font-medium leading-relaxed opacity-70">
-                  Transições deixam de ser uma "ordem da mãe" e passam a ser "o que o quadro diz". Isso dá à criança uma sensação de autonomia, diminuindo o desejo de negociar tudo.
-                </p>
-              </div>
-            )}
+            {openAccordion === 1 && <div className="px-6 pb-6 text-xs text-gray-500 font-medium leading-relaxed">Crianças não entendem conceitos abstratos como "daqui a pouco". Elas precisam VER para cooperar. O método transforma ordens em imagens.</div>}
           </div>
         </div>
 
-        <div className="pt-10 pb-10 space-y-6">
+        <div className="pt-10 space-y-8">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 bg-[#FE2C55] text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
-              <Gift size={14} /> PRESENTE PARA VOCÊ
+            <div className="inline-flex items-center gap-2 bg-[#FE2C55] text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 shadow-lg shadow-red-500/20">
+              <Gift size={14} /> PRESENTE DE ATIVAÇÃO
             </div>
-            <h3 className="text-xl font-black text-[#0F172A] mb-2 tracking-tighter">Começe a mudar a Rotina da sua casa Hoje!</h3>
-            <p className="text-gray-500 text-sm font-medium mb-8 leading-relaxed">Raspe abaixo e libere seu bônus de ativação imediata.</p>
+            <h3 className="text-2xl font-black text-[#0F172A] mb-3 tracking-tighter">Raspe para descobrir como começar a resolver sua rotina ainda hoje:</h3>
+            <p className="text-gray-500 text-sm font-medium mb-10 leading-relaxed">Libere agora a solução que vai transformar suas manhãs e noites.</p>
           </div>
           
-          <ScratchCard onComplete={handleScratchComplete} />
+          <ScratchCardOffer onComplete={() => funnelTracker.track("DIAGNOSTICO_RASPADINHA_REVELADA")} />
 
-          {showBonus && (
-            <div className="animate-fade-in text-center pt-4">
-              <p className="text-[11px] text-[#FE2C55] font-black uppercase tracking-[0.2em] animate-pulse">Bônus de Ativação Liberado!</p>
+          <div className="pt-8 space-y-8">
+            <div className="bg-amber-50 border border-amber-100 p-6 rounded-[2rem] flex items-start gap-4">
+              <AlertTriangle className="text-amber-500 shrink-0" size={24} />
+              <div>
+                <p className="text-[13px] font-bold text-amber-900 leading-snug">
+                  ⚠️ Essa é a única forma de adquirir o App e se sair da tela vai perder a chance. Este cupom de R$ 19,90 expira ao fechar esta página.
+                </p>
+              </div>
             </div>
-          )}
+
+            <div className="flex flex-col items-center gap-4 bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100">
+               <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-[#34C759] shadow-sm">
+                 <Award size={32} />
+               </div>
+               <div className="text-center">
+                 <h4 className="font-black text-[#0F172A] text-sm mb-1">GARANTIA INCONDICIONAL DE 30 DIAS</h4>
+                 <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
+                   Teste o aplicativo e o planner por 30 dias. Se a rotina da sua casa não mudar, devolvemos cada centavo sem perguntas.
+                 </p>
+               </div>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 opacity-40 py-10 border-t border-gray-100">
-          <Lock size={28} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Diagnóstico Pessoal e Protegido</span>
+        <div className="flex flex-col items-center gap-4 opacity-30 py-10">
+          <Lock size={24} />
+          <span className="text-[10px] font-black uppercase tracking-widest">Conexão Segura e Criptografada</span>
         </div>
       </main>
 

@@ -5,6 +5,7 @@ import QuizPage from './pages/QuizPage';
 import SalesPage from './pages/SalesPage';
 import DiagnosisPage from './pages/DiagnosisPage';
 import PrivacyPage from './pages/PrivacyPage';
+import LeadCapturePage from './pages/LeadCapturePage';
 import IntroWhatsAppMission from './pages/IntroWhatsAppMission';
 import CallMission from './pages/CallMission';
 import WhatsAppMission from './pages/WhatsAppMission';
@@ -49,6 +50,7 @@ const App: React.FC = () => {
           <Route path="/missao-2-whatsapp" element={<WhatsAppMission />} />
           <Route path="/missao-3-video" element={<VideoMission />} />
           <Route path="/sales" element={<SalesPage />} />
+          <Route path="/captura" element={<LeadCapturePage />} />
           <Route path="/diagnostico" element={<DiagnosisPage />} />
           <Route path="/privacidade" element={<PrivacyPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
