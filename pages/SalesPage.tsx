@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Volume2, VolumeX, ArrowRight, FileText, CheckCircle2, Sparkles, MessageSquare, Hand, Gift, Play } from 'lucide-react';
+import { Volume2, VolumeX, ArrowRight, CheckCircle2, Hand, Gift, Play } from 'lucide-react';
 import { funnelTracker, FunnelStep } from '../services/funnelTracker';
 
 const VSL_VIDEO_URL = "https://res.cloudinary.com/dafhibb8s/video/upload/v1767185181/MINI_VSL_40MB_-_FILHOS_COM_ROTINA_jgqf44.mp4";
@@ -126,7 +126,7 @@ const SalesPage: React.FC = () => {
     if (!videoRef.current) return;
     const time = videoRef.current.currentTime;
     const duration = videoRef.current.duration;
-    setProgress((time / duration) * 100);
+    if (duration > 0) setProgress((time / duration) * 100);
 
     if (time >= CONCLUDE_TIMESTAMP && !videoEnded) {
       videoRef.current.pause();
@@ -137,17 +137,19 @@ const SalesPage: React.FC = () => {
     const q = QUESTIONS.find(q => Math.floor(time) === q.time && !answeredIds.has(q.id));
     if (q && !activeQuestion) {
       setActiveQuestion(q);
-      // NÃO PAUSAR O VÍDEO - MANTER O VIDEO RODANDO
+      console.log(`[SalesPage] Exibindo pergunta: ${q.id}`);
     }
   };
 
   const handleAnswer = (option: string) => {
     if (!activeQuestion) return;
+    
+    // Disparo imediato do rastreamento
     funnelTracker.track(activeQuestion.trackKey, option);
+    
     setAnswers(prev => ({ ...prev, [activeQuestion.id]: option }));
     setAnsweredIds(prev => new Set(prev).add(activeQuestion.id));
     setActiveQuestion(null);
-    // VÍDEO JÁ ESTÁ RODANDO, NÃO PRECISA CHAMAR PLAY
   };
 
   const unlockVideo = () => {
@@ -169,6 +171,7 @@ const SalesPage: React.FC = () => {
   };
 
   const goToCapture = () => {
+    funnelTracker.track("VSL_CLICOU_VER_DIAGNOSTICO");
     navigate('/captura', { state: { answers } });
   };
 
@@ -197,7 +200,7 @@ const SalesPage: React.FC = () => {
         <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-white/20 z-30">
           <div className="h-full bg-[#FE2C55] transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
-        <button onClick={() => setIsMuted(!isMuted)} className="absolute top-6 right-6 z-30 p-3 bg-black/40 backdrop-blur-md rounded-full text-white border border-white/20">
+        <button onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }} className="absolute top-6 right-6 z-30 p-3 bg-black/40 backdrop-blur-md rounded-full text-white border border-white/20">
           {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
         </button>
 

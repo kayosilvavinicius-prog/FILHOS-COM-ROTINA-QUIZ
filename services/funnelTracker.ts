@@ -7,7 +7,6 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhbBm5xr_s8uEgcw-5HRljBXrwgSbLUiGEGcwrMmnyx3UKq3BiHSCmqJzq9vTv_YBe5w/exec";
 
 export type FunnelStep = 
-  // Etapas Iniciais (Quiz Antigo / Jornada)
   | "ETAPA_1_CARREGOU_PAGINA"
   | "ETAPA_1_INICIOU_JORNADA"
   | "ETAPA_3_ROTINA_ATUAL"
@@ -23,8 +22,6 @@ export type FunnelStep =
   | "ETAPA_14_PROCESSAMENTO"
   | "ETAPA_15_DIAGNOSTICO"
   | "ETAPA_16_CTA_PAGINA_VENDAS"
-  
-  // Novas Etapas Estratégicas (VSL Interativa na SalesPage)
   | "ENTROU_PAGINA_VENDAS"
   | "VSL_RESPOSTA_RECONHECIMENTO"
   | "VSL_RESPOSTA_ROTINA"
@@ -37,13 +34,9 @@ export type FunnelStep =
   | "VSL_VIDEO_CONCLUIDO"
   | "VSL_CLICOU_VER_DIAGNOSTICO"
   | "ETAPA_3_VSL_CONCLUIDA"
-  
-  // Etapas da Página de Diagnóstico
   | "DIAGNOSTICO_ACESSO"
   | "DIAGNOSTICO_RASPADINHA_REVELADA"
   | "DIAGNOSTICO_CLICOU_CHECKOUT"
-  
-  // Checkout
   | "CHECKOUT_INICIADO";
 
 class FunnelTracker {
@@ -59,39 +52,22 @@ class FunnelTracker {
   }
 
   private isDevelopment(): boolean {
-    const hostname = window.location.hostname;
-    return (
-      hostname === 'localhost' || 
-      hostname === '127.0.0.1' || 
-      hostname.includes('.preview.') || 
-      hostname.includes('stackblitz') ||
-      hostname.includes('webcontainer')
-    );
+    return window.location.hostname === 'localhost' || window.location.hostname.includes('stackblitz');
   }
 
   private getSource(): string {
     const urlParams = new URLSearchParams(window.location.search);
     const utmSource = urlParams.get('utm_source')?.toLowerCase() || "";
-    const mode = urlParams.get('mode')?.toLowerCase() || "";
-
-    if (mode === "test" || (this.isDevelopment() && mode !== "prod")) {
-      return "Teste";
-    }
-    
     if (utmSource.includes("facebook") || utmSource.includes("fb")) return "Facebook";
     if (utmSource.includes("instagram") || utmSource.includes("ig")) return "Instagram";
-    if (utmSource) return utmSource.charAt(0).toUpperCase() + utmSource.slice(1);
-    
-    return "Direto";
+    return utmSource || "Direto";
   }
 
-  /**
-   * Salva as informações do lead localmente para enviá-las em rastreamentos futuros.
-   */
   updateLeadInfo(name: string, email: string, phone: string) {
     localStorage.setItem('funnel_lead_name', name);
     localStorage.setItem('funnel_lead_email', email);
     localStorage.setItem('funnel_lead_phone', phone);
+    console.log("[FunnelTracker] Dados do lead atualizados localmente.");
   }
 
   private getLeadData() {
@@ -102,18 +78,10 @@ class FunnelTracker {
     };
   }
 
-  /**
-   * @param step O identificador da etapa do funil
-   * @param data Valor opcional da resposta ou metadado
-   */
   async track(step: FunnelStep, data?: string) {
     const source = this.getSource();
     const lead = this.getLeadData();
     
-    if (step.startsWith("VSL_")) {
-      console.log(`[FunnelTracker] Rastreando: ${step} - Resposta: ${data}`);
-    }
-
     const payload = {
       userId: this.userId,
       step: step,
@@ -125,14 +93,20 @@ class FunnelTracker {
       timestamp: new Date().toISOString()
     };
 
+    console.info(`[FunnelTracker] Enviando: ${step} | Dado: ${data || 'N/A'}`);
+
     try {
-      fetch(SCRIPT_URL, {
+      // Usamos text/plain para evitar pre-flight OPTIONS que falham no Google Apps Script com no-cors
+      await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain',
+        },
         body: JSON.stringify(payload),
       });
     } catch (error) {
-      console.warn("[FunnelTracker] Silent Error:", error);
+      console.warn("[FunnelTracker] Erro silencioso ao trackear:", error);
     }
   }
 }
