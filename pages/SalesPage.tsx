@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Volume2, VolumeX, ArrowRight, CheckCircle2, Hand, Gift, Play, ShieldCheck } from 'lucide-react';
+import { Volume2, VolumeX, ArrowRight, CheckCircle2, Hand, Gift, Play, ShieldCheck, Lock } from 'lucide-react';
 import { funnelTracker, FunnelStep } from '../services/funnelTracker';
 
 const VSL_VIDEO_URL = "https://res.cloudinary.com/dafhibb8s/video/upload/v1767185181/MINI_VSL_40MB_-_FILHOS_COM_ROTINA_jgqf44.mp4";
@@ -247,31 +247,37 @@ const SalesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Footer Institucional */}
-      <footer className="w-full max-w-[450px] mx-auto px-6 py-12 mt-10 border-t border-gray-100 flex flex-col items-center gap-4">
+      {/* Footer Institucional Polido */}
+      <footer className="w-full max-w-[450px] mx-auto px-6 py-12 mt-10 border-t border-gray-100 flex flex-col items-center gap-6">
         <div className="flex flex-col items-center gap-2">
-          <div className="text-[12px] font-black text-gray-500 uppercase tracking-[0.2em] mb-1">
+          <div className="text-[13px] font-black text-gray-600 uppercase tracking-[0.2em] mb-1">
             D4K MATERNIDADE
           </div>
-          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+          <div className="text-[11px] text-gray-400 font-bold uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
             CNPJ: 50.321.456/0001-90
           </div>
         </div>
 
-        <div className="flex items-center gap-6 mt-2">
-          <button 
-            onClick={() => navigate('/privacidade')}
-            className="text-[11px] text-gray-400 font-bold underline decoration-gray-200 underline-offset-4 hover:text-[#FE2C55] transition-colors uppercase tracking-tight"
-          >
-            Políticas de Privacidade
-          </button>
-          <div className="w-1 h-1 bg-gray-200 rounded-full" />
-          <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-bold uppercase">
-            <ShieldCheck size={14} className="text-[#34C759]" /> Site Seguro
+        <div className="flex flex-col items-center gap-4 w-full">
+          <div className="flex items-center gap-4 justify-center">
+            <button 
+              onClick={() => navigate('/privacidade')}
+              className="text-[11px] text-gray-500 font-bold underline decoration-gray-200 underline-offset-4 hover:text-[#FE2C55] transition-colors uppercase tracking-tight"
+            >
+              Política de Privacidade
+            </button>
+            <div className="w-1 h-1 bg-gray-200 rounded-full" />
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-bold uppercase">
+              <ShieldCheck size={14} className="text-[#34C759]" /> Site Seguro
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
+            <Lock size={12} className="text-gray-300" /> Seus dados estão protegidos pela LGPD
           </div>
         </div>
 
-        <p className="text-[10px] text-gray-300 font-medium text-center leading-relaxed mt-4 max-w-[320px]">
+        <p className="text-[10px] text-gray-400 font-medium text-center leading-relaxed mt-2 max-w-[320px] opacity-80">
           © 2025 Todos os direitos reservados. Este site não faz parte do Google ou do Facebook. Além disso, este site não é endossado pelo Google ou pelo Facebook de nenhuma maneira.
         </p>
       </footer>
