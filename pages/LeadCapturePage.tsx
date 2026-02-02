@@ -100,10 +100,17 @@ const LeadCapturePage: React.FC = () => {
           </button>
         </form>
 
-        <div className="mt-10 flex flex-col items-center gap-3 opacity-40">
-          <ShieldCheck size={24} />
-          <p className="text-[10px] font-bold uppercase tracking-widest text-center">
-            Seus dados estão 100% seguros.<br/>Odieamos spam tanto quanto você.
+        <div className="mt-10 flex flex-col items-center gap-2 opacity-40">
+          <ShieldCheck size={20} className="text-[#34C759]" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-center leading-relaxed">
+            Seus dados estão 100% seguros.<br/>
+            <button 
+              type="button"
+              onClick={() => navigate('/privacidade')}
+              className="underline decoration-gray-400 underline-offset-4 hover:text-[#FE2C55] transition-colors"
+            >
+              Política de Privacidade
+            </button>
           </p>
         </div>
       </main>
