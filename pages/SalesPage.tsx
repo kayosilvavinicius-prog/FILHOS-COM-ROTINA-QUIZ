@@ -26,6 +26,42 @@ const QUESTIONS: Question[] = [
   { id: 'crenca', time: 186, text: "Você acredita que se ele entendesse melhor o dia, ele cooperaria mais?", options: ["Sim, faz sentido", "Talvez", "Nunca pensei nisso"], trackKey: "VSL_RESPOSTA_CRENCA" }
 ];
 
+const InstitutionalFooter: React.FC<{ navigate: any }> = ({ navigate }) => (
+  <footer className="w-full max-w-[450px] mx-auto px-6 py-8 flex flex-col items-center gap-6 animate-fade-in">
+    <div className="flex flex-col items-center gap-2">
+      <div className="text-[12px] font-black text-gray-500 uppercase tracking-[0.2em]">
+        D4K MATERNIDADE
+      </div>
+      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+        CNPJ: 50.321.456/0001-90
+      </div>
+    </div>
+
+    <div className="flex flex-col items-center gap-3 w-full">
+      <div className="flex items-center gap-4 justify-center">
+        <button 
+          onClick={() => navigate('/privacidade')}
+          className="text-[11px] text-gray-500 font-bold underline decoration-gray-200 underline-offset-4 hover:text-[#FE2C55] transition-colors uppercase tracking-tight"
+        >
+          Política de Privacidade
+        </button>
+        <div className="w-1 h-1 bg-gray-200 rounded-full" />
+        <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-bold uppercase">
+          <ShieldCheck size={14} className="text-[#34C759]" /> Site Seguro
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-2 text-[9px] text-gray-400 font-bold uppercase tracking-tighter opacity-70">
+        <Lock size={10} className="text-gray-300" /> Seus dados estão protegidos pela LGPD
+      </div>
+    </div>
+
+    <p className="text-[9px] text-gray-300 font-medium text-center leading-relaxed max-w-[280px]">
+      © 2025 Todos os direitos reservados.
+    </p>
+  </footer>
+);
+
 const ScratchCardHeader: React.FC<{ onUnlock: () => void }> = ({ onUnlock }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isRevealed, setIsRevealed] = useState(false);
@@ -143,10 +179,7 @@ const SalesPage: React.FC = () => {
 
   const handleAnswer = (option: string) => {
     if (!activeQuestion) return;
-    
-    // Disparo imediato do rastreamento
     funnelTracker.track(activeQuestion.trackKey, option);
-    
     setAnswers(prev => ({ ...prev, [activeQuestion.id]: option }));
     setAnsweredIds(prev => new Set(prev).add(activeQuestion.id));
     setActiveQuestion(null);
@@ -176,15 +209,22 @@ const SalesPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen flex flex-col items-center justify-start overflow-x-hidden relative text-[#0F172A] pb-20">
+    <div className="bg-[#FAF9F6] min-h-screen flex flex-col items-center justify-start overflow-x-hidden relative text-[#0F172A] pb-10">
       <header className="w-full bg-white px-6 py-10 text-center shadow-sm relative z-50">
-        <div className="max-w-[550px] mx-auto space-y-6">
+        <div className="max-w-[550px] mx-auto space-y-4">
           <h2 className="text-[#FE2C55] font-black text-[14px] sm:text-[16px] uppercase tracking-tight leading-tight px-4">
             OI, MÃE! QUERO TE PARABENIZAR POR CHEGAR ATÉ AQUI. 🌟
           </h2>
           <div className="px-2">
             <ScratchCardHeader onUnlock={unlockVideo} />
           </div>
+          
+          {/* Footer imediato quando bloqueado */}
+          {!videoUnlocked && (
+            <div className="pt-2">
+              <InstitutionalFooter navigate={navigate} />
+            </div>
+          )}
         </div>
       </header>
 
@@ -242,45 +282,22 @@ const SalesPage: React.FC = () => {
       
       {!videoUnlocked && (
         <div className="py-20 flex flex-col items-center gap-4 text-gray-300">
-          <Play size={48} className="opacity-20" />
-          <p className="text-[10px] font-black uppercase tracking-widest">Vídeo Bloqueado até liberar o presente</p>
+          <Play size={48} className="opacity-10" />
+          <p className="text-[10px] font-black uppercase tracking-widest opacity-20">Vídeo Bloqueado até liberar o presente</p>
         </div>
       )}
 
-      {/* Footer Institucional Polido */}
-      <footer className="w-full max-w-[450px] mx-auto px-6 py-12 mt-10 border-t border-gray-100 flex flex-col items-center gap-6">
-        <div className="flex flex-col items-center gap-2">
-          <div className="text-[13px] font-black text-gray-600 uppercase tracking-[0.2em] mb-1">
-            D4K MATERNIDADE
-          </div>
-          <div className="text-[11px] text-gray-400 font-bold uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-            CNPJ: 50.321.456/0001-90
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center gap-4 w-full">
-          <div className="flex items-center gap-4 justify-center">
-            <button 
-              onClick={() => navigate('/privacidade')}
-              className="text-[11px] text-gray-500 font-bold underline decoration-gray-200 underline-offset-4 hover:text-[#FE2C55] transition-colors uppercase tracking-tight"
-            >
-              Política de Privacidade
-            </button>
-            <div className="w-1 h-1 bg-gray-200 rounded-full" />
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-bold uppercase">
-              <ShieldCheck size={14} className="text-[#34C759]" /> Site Seguro
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
-            <Lock size={12} className="text-gray-300" /> Seus dados estão protegidos pela LGPD
+      {/* Footer final que aparece apenas após desbloquear */}
+      {videoUnlocked && (
+        <div className="w-full pt-10 border-t border-gray-100 mt-10">
+          <InstitutionalFooter navigate={navigate} />
+          <div className="text-center px-6 mt-4">
+            <p className="text-[10px] text-gray-300 font-medium leading-relaxed max-w-[320px] mx-auto opacity-70">
+              © 2025 Todos os direitos reservados. Este site não faz parte do Google ou do Facebook. Além disso, este site não é endossado pelo Google ou pelo Facebook de nenhuma maneira.
+            </p>
           </div>
         </div>
-
-        <p className="text-[10px] text-gray-400 font-medium text-center leading-relaxed mt-2 max-w-[320px] opacity-80">
-          © 2025 Todos os direitos reservados. Este site não faz parte do Google ou do Facebook. Além disso, este site não é endossado pelo Google ou pelo Facebook de nenhuma maneira.
-        </p>
-      </footer>
+      )}
     </div>
   );
 };
